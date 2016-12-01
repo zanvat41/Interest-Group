@@ -1,6 +1,7 @@
 # README #
 
 CSE 310 : Final Project
+Group # 43
 
 Course project: Interest Groups 
 Using the Internet domain sockets, implement a network application that supports interest-based discussion groups.
