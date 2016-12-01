@@ -1,0 +1,37 @@
+from socket import *
+
+# Constant Var for N
+DEFAULT_N = 15
+
+# Establish socket connection
+serverName = 'localhost'
+serverPort = 7257
+clientSocket = socket(AF_INET, SOCK_STREAM)
+clientSocket.connect((serverName, serverPort))
+
+
+
+# help
+# Prints a list of supported commands and sub-commands.
+# For each command or sub-command, a brief description of
+# its function and the syntax of usage are displayed
+def help():
+    return
+
+#
+#
+#
+def sg():
+    return
+#
+#
+#
+def rg():
+    return
+
+# Logout
+# Function takes no arguments. It logs out the current user
+# closes the socket and terminates the client program
+def logout():
+    clientSocket.close()
+    exit()
