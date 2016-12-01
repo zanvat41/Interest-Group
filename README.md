@@ -10,6 +10,6 @@ Your implementation consists of a client program and a server program. The clien
 You are to develop this project in groups of 3 students. 
 
 ##-----Authors------
-Johnson Lu
-Christopher Andrzejczyk
+Johnson Lu,
+Christopher Andrzejczyk,
 Lin Zhe
