@@ -13,19 +13,40 @@ clientSocket.connect((serverName, serverPort))
 
 # main function
 def main():
-    while(1):
-        cmd = input("client >> ")
+    LOGGEDIN = False
 
-        if cmd == "help":
-            clientFunc.printHelp()
-        elif cmd == "ag":
-            clientFunc.ag()
-        elif cmd == "sg":
-            clientFunc.sg()
-        elif cmd == "rg":
-            clientFunc.rg()
-        elif cmd == "logout":
-            clientFunc.logout(clientSocket)
+    while(1):
+        cmd = input("Client >> ").split()                           # takes user input and splits it into a list
+                                                                    #       arg[0] will always be the cmd
+        if cmd[0] == "help":                                        #       and all following items are ARGS
+            clientFunc.printHelp()              # print help
+        elif cmd[0] == "login":                 # log user in
+            print(cmd[1])
+            LOGGEDIN = clientFunc.login(cmd[1])
+        elif cmd[0] == "ag":
+            if LOGGEDIN == False:
+                print("please login first")
+            else:
+                clientFunc.ag()
+        elif cmd[0] == "sg":
+            if LOGGEDIN == False:
+                print("please login first")
+            else:
+                clientFunc.sg()
+        elif cmd[0] == "rg":
+            if LOGGEDIN == False:
+                print("please login first")
+            else:
+                clientFunc.rg()
+        elif cmd[0] == "logout":
+            if LOGGEDIN == False:
+                print("You are not logged in")
+            else:
+                clientFunc.logout(clientSocket)
+        elif cmd[0] == "quit":
+            print("Exiting...")
+            clientSocket.close()
+            exit()
         else:
             print("Invalid Command")
             clientFunc.printHelp()

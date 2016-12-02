@@ -7,6 +7,7 @@ DEFAULT_N = 5
 # its function and the syntax of usage are displayed
 def printHelp():
     print("**This is a help menu, this menu can be brought up by typing the command help\n",
+          "login",
           "ag[N]\tPrints a list of Discussion groups\n\t\t\tN: 1 to N for the number of",
           "groups to be displayed\n\t\t\tDefault: 5\n",
           "sg[N]\tPrints a list of Subscribed groups\n\t\t\t",
@@ -15,6 +16,13 @@ def printHelp():
           "N: 1 to N for the number of groups to be displayed\n\t\t\tDefault: 5\n",
           sep="")
     return
+
+# login
+# Allows the user to login using their ID number
+def login(ID):
+    # Do login stuff
+    loggedIn = False;
+    return loggedIn
 
 # ag
 # this command stands for “all groups”. It takes an optional argument, N,
