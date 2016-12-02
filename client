@@ -1,4 +1,6 @@
+import clientFunc
 from socket import *
+
 
 # Constant Var for N
 DEFAULT_N = 15
@@ -9,29 +11,25 @@ serverPort = 7257
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 
+# main function
+def main():
+    while(1):
+        cmd = input("client >> ")
 
+        if cmd == "help":
+            clientFunc.printHelp()
+        elif cmd == "ag":
+            clientFunc.ag()
+        elif cmd == "sg":
+            clientFunc.sg()
+        elif cmd == "rg":
+            clientFunc.rg()
+        elif cmd == "logout":
+            clientFunc.logout(clientSocket)
+        else:
+            print("Invalid Command")
+            clientFunc.printHelp()
 
-# help
-# Prints a list of supported commands and sub-commands.
-# For each command or sub-command, a brief description of
-# its function and the syntax of usage are displayed
-def help():
-    return
-
-#
-#
-#
-def sg():
-    return
-#
-#
-#
-def rg():
-    return
-
-# Logout
-# Function takes no arguments. It logs out the current user
-# closes the socket and terminates the client program
-def logout():
-    clientSocket.close()
-    exit()
+# run main
+if(__name__ == "__main__"):
+    main()
