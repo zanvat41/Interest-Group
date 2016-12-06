@@ -21,7 +21,6 @@ def main():
         if cmd[0] == "help":                                        #       and all following items are ARGS
             clientFunc.printHelp()              # print help
         elif cmd[0] == "login":                 # log user in
-            print(cmd[1])
             LOGGEDIN = clientFunc.login(cmd[1])
         elif cmd[0] == "ag":
             if LOGGEDIN == False:
