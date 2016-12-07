@@ -6,6 +6,7 @@ DEFAULT_N = 5
 USR_PATH = 'usrs/'
 EXTENDSION = '.txt'
 
+
 # Group Map
 # Just a quick write up of a group map for all the discussion
 # groups that will be use. Can be cleaned up some.
@@ -52,10 +53,17 @@ def printHelp():
     return
 
 # login
+# Parameters ID, user ID for log in
+#
 # Allows the user to login using their ID number
+# returns true if the user was logged in and false if
+# the user was not logged in. Pretty much the way this
+# is written it will always return true, really no reason
+# for it not to.
+#
+# Return : True if user logged in, False if user is not
 def login(ID):
     # Do login stuff
-    loggedIn = False;
     file = Path(USR_PATH + ID +EXTENDSION)
     if file.is_file():
         # read file and import data
@@ -66,7 +74,7 @@ def login(ID):
         print("FILE DOESNT EXIT")
         createHisto(ID)
 
-    return loggedIn
+    return True
 
 # ag
 # this command stands for “all groups”. It takes an optional argument, N,
@@ -99,6 +107,8 @@ def logout(socket):
     exit()
 
 # createHisto
+# Parameters ID, user ID to use for file name
+#
 # If a user logs inand no file exist for the ID then create a new file for that user with the
 # ID as the file name
 def createHisto(ID):
@@ -115,8 +125,13 @@ def createHisto(ID):
     return
 
 # fillHisto
+# Parameters ID, user ID for opening a file using the id name
 #
-#
+# FillHisto opens the user's data file and it fills it with the current histo
+# if the user has no file this function will be called to write a default group
+# histo to the file.
+# Call this function to write to the data file with an updated histo
+
 def fillHisto(ID):
     fileName = USR_PATH + str(ID) + EXTENDSION
     file = open(fileName, 'r')

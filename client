@@ -5,6 +5,9 @@ from socket import *
 # Constant Var for N
 DEFAULT_N = 15
 
+# Log in status for user
+LOGGED_IN = False
+
 # Establish socket connection
 serverName = 'localhost'
 serverPort = 7257
@@ -13,9 +16,9 @@ clientSocket.connect((serverName, serverPort))
 
 # main function
 def main():
-    LOGGEDIN = False
 
     while(1):
+        print("Client is connected...")
         cmd = input("Client >> ").split()                           # takes user input and splits it into a list
                                                                     #       arg[0] will always be the cmd
         if cmd[0] == "help":                                        #       and all following items are ARGS
