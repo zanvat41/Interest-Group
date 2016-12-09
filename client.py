@@ -26,37 +26,39 @@ def main():
             if LOGGED_IN == False:
 
                 LOGGED_IN = clientFunc.login(cmd[1])
-                print("User : " + cmd[1] + " is now logged in.")
+                print("User : " + cmd[1] + " is now logged in.\n")
                 clientSocket.send(cmd[1].encode())
             else:
-                print("You are already logged in.")
+                print("You are already logged in.\n")
 
         elif cmd[0] == "ag":
             if LOGGED_IN == False:
-                print("please login first")
+                print("please login first\n")
             else:
                 clientFunc.ag()
         elif cmd[0] == "sg":
             if LOGGED_IN == False:
-                print("please login first")
+                print("please login first\n")
             else:
                 clientFunc.sg()
         elif cmd[0] == "rg":
             if LOGGED_IN == False:
-                print("please login first")
+                print("please login first\n")
             else:
                 clientFunc.rg()
         elif cmd[0] == "logout":
             if LOGGED_IN == False:
-                print("You are not logged in")
+                print("You are not logged in\n")
             else:
+                clientSocket.send("lo".encode())
                 clientFunc.logout(clientSocket)
         elif cmd[0] == "quit":
-            print("Exiting...")
+            print("Exiting...\n")
+            clientSocket.send("lo".encode())
             clientSocket.close()
             exit()
         else:
-            print("Invalid Command")
+            print("Invalid Command\n")
             clientFunc.printHelp()
 
 # run main

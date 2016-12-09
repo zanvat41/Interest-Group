@@ -1,5 +1,6 @@
 from socket import *
 import threading
+import serverFunc
 
 import time
 
@@ -20,7 +21,7 @@ def main():
         print("ID : " + ID + " has connected to the server")
         try:
 
-            newThread = threading.Thread(target = handleClient, name = ("client" + ID), args = (ID,))
+            newThread = threading.Thread(target = handleClient, name = ("client" + ID), args = (ID, clientsocket,))
             newThread.daemon = True
             clientList.append(newThread)
             newThread.start()
@@ -31,10 +32,21 @@ def main():
             x.join()                                          # loop thur list clientList
             print("thread joined")                          # and join them
 
-def handleClient(ID):
+def handleClient(ID, clientsocket):
 
-    for x in range(0, 25):              # temp function to stop pycharm from yelling at me
-        print(x)
+    while (1):
+        request = clientsocket.recv(1024).decode()
+
+        if request == "sg":
+            serverFunc.sg(ID, clientsocket)
+        elif request == "rg":
+            serverFunc.rg(ID, clientsocket)
+        elif request == "lo":
+            serverFunc.logout(ID)
+            break
+        else:
+            # something went wrong
+            print("Invalid request")
 
 
 def exit():

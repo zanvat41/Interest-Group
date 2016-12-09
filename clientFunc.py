@@ -15,6 +15,7 @@ This will mainly be used to make the user file.
 Key : group name  ,   Value : subscribed boolean(0/1)
 '''
 groups = {
+    'Author' : 'name',
     'comp.programming': 0,
     'comp.lang.c': 0,
     'comp.lang.python': 0,
@@ -77,7 +78,7 @@ def login(ID):
         fillHisto(ID)
     else:
         # else create the file
-        print("User does not exist, creating user...")
+        print("User does not exist, creating user...\n")
         createHisto(ID)
 
     return True
@@ -123,17 +124,22 @@ def logout(socket):
 createHisto
 Parameters ID, user ID to use for file name
 
-If a user logs inand no file exist for the ID then create a new file for that user with the
+If a user logs in and no file exist for the ID then create a new file for that user with the
 ID as the file name
 '''
 def createHisto(ID):
     fileName = USR_PATH + str(ID) + EXTENDSION
     file = open(fileName, 'w')
 
-    for i in groups.keys():
-        file.write(i)                                   # writes group name
+    for key, value in groups.items():
+
+        file.write(key)                                   # writes group name
         file.write(",")                                 # writes sep
-        file.write(str(groups.get(i)))                  # writes sub bool for group
+        if key == 'Author':  # gets the users name for post writing
+            name = input('Please enter your name\n')
+            file.write(name)
+        else:
+            file.write(str(groups.get(key)))                  # writes sub bool for group
         file.write("\n")                                # writes new line
 
     file.close()
@@ -161,3 +167,4 @@ def fillHisto(ID):
         data = line.split(',')                          # breaks the line into its part by ','
         if data[0] in groups.keys():                    # checks if the data is correct
             groups[data[0]] = data[1]                   # sets the value
+    file.close()
