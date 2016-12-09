@@ -120,6 +120,7 @@ def login(ID):
 # numbered 1 to N.
 '''
 def ag(N):
+    total = len(keys)
     remain = len(keys)
     n = N
     if n < remain:
@@ -136,6 +137,22 @@ def ag(N):
 
 
     # Then take sub-commands
+    while (1):
+        cmd = input("ag >> ").split()  # arg[0] will always be the cmd
+        if cmd[0] == "s":  # and all following items are ARGS
+            if len(cmd) == 1:
+                print("Command Error: s, too few arguments")
+            else:
+                for i in range (1, len(cmd)):
+                    groups[keys[total - remain - n - 1 + cmd[i]]] = 1
+
+                # then update the user file
+                # create a function like createHisto
+
+
+        elif cmd[0] == "q":
+            break
+
 
 
 
@@ -189,7 +206,7 @@ def createHisto(ID):
 
         file.write(key)                                   # writes group name
         file.write(",")                                 # writes sep
-        if key == 'Author':  # gets the users name for post writing for first time users
+        if key == 'Author':  # gets the users name for post writing
             name = input('Please enter your name\n')
             file.write(name)
         else:
