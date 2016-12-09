@@ -1,6 +1,12 @@
 import clientFunc
 from socket import *
 
+'''
+TCP Discussion Group Client/Sever
+Authors : Johnson Lu, Christopher Andrzejczyk, Lin Zhe
+
+Python 3.5
+'''
 # Establish socket connection
 serverName = 'localhost'
 serverPort = 7257

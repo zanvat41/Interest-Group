@@ -1,5 +1,6 @@
 import os
 import time
+import re
 
 USR_PATH = "serverData/"
 EXTENDSION = ".txt"
@@ -41,8 +42,61 @@ groups = {
 def sg(ID, socket):
     return
 
-def rg(ID, socket):
+'''
+rg
+parameter ID, socket, group
+
+client request to read groups.
+'''
+def rg(ID, clientsocket, serversocket, group):
+
+    while(1):
+        request = clientsocket.recv(1024).decode()
+
+        if request == 'r':
+            print('User has mark files as read, update users data')
+        elif request == 'n':
+            print('send next list of post in group')
+        elif request == 'q':
+            break
+        else:
+            # check if its a read command
+            reg = re.compile('r /d*')
+            match = re.match(request)
+            if match:
+                req = request.split(' ')
+                postNum = req[1]
+                readPost(serversocket,group,postNum)
+
+
     return
+
+def readPost(serversocket, group, postnumber):
+    file = open(group, 'w')
+
+    while 1:  # read FILE line by line
+        postID = file.readline()                    # read post line
+        tempbuf = postID.split(':')                 # get the ID of the post from file
+        ID = tempbuf[1]                             # check if post matches the ID that the user wants
+        if ID == postnumber:
+            serversocket.send(postID.encode())
+            authorName = file.readline()
+            serversocket.send(authorName.encode())
+            postDate = file.readline()
+            serversocket.send(postDate.encode())
+            subject = file.readline()
+            serversocket.send(subject.encode())
+
+            while 1:  # read POST and send post line by line till it reaches end of post
+                line = file.readline()
+                if line == "":  # end of file has been reached
+                    break
+                if line == "---ENDOFPOST---":  # end of post reached
+                    break
+                serversocket.send(line.encode())
+
+    file.close()
+
 '''
 logout
 

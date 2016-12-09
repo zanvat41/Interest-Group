@@ -21,7 +21,9 @@ def main():
         print("ID : " + ID + " has connected to the server")
         try:
 
-            newThread = threading.Thread(target = handleClient, name = ("client" + ID), args = (ID, clientsocket,))
+            newThread = threading.Thread(target = handleClient,
+                                         name = ("client" + ID),
+                                         args = (ID, clientsocket,serverSocket,))
             newThread.daemon = True
             clientList.append(newThread)
             newThread.start()
@@ -32,7 +34,7 @@ def main():
             x.join()                                          # loop thur list clientList
             print("thread joined")                          # and join them
 
-def handleClient(ID, clientsocket):
+def handleClient(ID, clientsocket, serversocket):
 
     while (1):
         request = clientsocket.recv(1024).decode()
@@ -40,7 +42,8 @@ def handleClient(ID, clientsocket):
         if request == "sg":
             serverFunc.sg(ID, clientsocket)
         elif request == "rg":
-            serverFunc.rg(ID, clientsocket)
+            group = clientsocket.recv(1024).decode()
+            serverFunc.rg(ID, clientsocket, serversocket, group)
         elif request == "lo":
             serverFunc.logout(ID)
             break
