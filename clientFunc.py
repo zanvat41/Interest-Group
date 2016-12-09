@@ -1,4 +1,5 @@
 import os
+import math
 from pathlib import Path
 
 # Declare CONSTANT vars
@@ -38,6 +39,33 @@ groups = {
     'sb.cse312': 0,
     'sb.cse320': 0
 }
+
+"""
+The keys in groups.
+In convenience of ag, sg and rg
+"""
+keys = [
+    'comp.programming',
+    'comp.lang.c',
+    'comp.lang.python',
+    'comp.lang.javascript',
+    'comp.lang.c++',
+    'comp.lang.java',
+    'math.crypto',
+    'math.algro',
+    'math.calc',
+    'math.stats',
+    'sb.cse114',
+    'sb.cse214',
+    'sb.cse219',
+    'sb.cse220',
+    'sb.cse300',
+    'sb.cse303',
+    'sb.cse310',
+    'sb.cse312',
+    'sb.cse320']
+
+
 '''
 help
 
@@ -82,15 +110,41 @@ def login(ID):
         createHisto(ID)
 
     return True
+
+
 '''
 # ag
 
 # this command stands for “all groups”. It takes an optional argument, N,
 # and lists the names of all existing discussion groups, N groups at a time,
-# numbered 1 to N.  If N is not specified, a default value is used.
+# numbered 1 to N.
 '''
-def ag():
+def ag(N):
+    remain = len(keys)
+    n = N
+    if n < remain:
+        remain = remain - n
+    else:
+        n = remain
+
+    # First print out the first n groups
+    for i in range(1, n+1):
+        sub = " "
+        if groups.get(keys[i - 1]) == 1:
+            sub = "s"
+        print(str(i) + ". (" + sub + ") "+ keys[i - 1])
+
+
+    # Then take sub-commands
+
+
+
+
     return
+
+
+
+
 '''
 sg
 
@@ -135,7 +189,7 @@ def createHisto(ID):
 
         file.write(key)                                   # writes group name
         file.write(",")                                 # writes sep
-        if key == 'Author':  # gets the users name for post writing
+        if key == 'Author':  # gets the users name for post writing for first time users
             name = input('Please enter your name\n')
             file.write(name)
         else:
