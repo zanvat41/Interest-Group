@@ -1,47 +1,53 @@
 import clientFunc
 from socket import *
 
-
-# Constant Var for N
-DEFAULT_N = 15
-
-# Log in status for user
-LOGGED_IN = False
-
 # Establish socket connection
 serverName = 'localhost'
 serverPort = 7257
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
+print("Client is connected...")
 
 # main function
 def main():
+    # Constant Var for N
+    DEFAULT_N = 15
+
+    # Log in status for user
+    LOGGED_IN = False
 
     while(1):
-        print("Client is connected...")
+
         cmd = input("Client >> ").split()                           # takes user input and splits it into a list
-                                                                    #       arg[0] will always be the cmd
+                                                                     #       arg[0] will always be the cmd
         if cmd[0] == "help":                                        #       and all following items are ARGS
-            clientFunc.printHelp()              # print help
+            clientFunc.printHelp()               # print help
         elif cmd[0] == "login":                 # log user in
-            LOGGEDIN = clientFunc.login(cmd[1])
+            if LOGGED_IN == False:
+
+                LOGGED_IN = clientFunc.login(cmd[1])
+                print("User : " + cmd[1] + " is now logged in.")
+                clientSocket.send(cmd[1].encode())
+            else:
+                print("You are already logged in.")
+
         elif cmd[0] == "ag":
-            if LOGGEDIN == False:
+            if LOGGED_IN == False:
                 print("please login first")
             else:
                 clientFunc.ag()
         elif cmd[0] == "sg":
-            if LOGGEDIN == False:
+            if LOGGED_IN == False:
                 print("please login first")
             else:
                 clientFunc.sg()
         elif cmd[0] == "rg":
-            if LOGGEDIN == False:
+            if LOGGED_IN == False:
                 print("please login first")
             else:
                 clientFunc.rg()
         elif cmd[0] == "logout":
-            if LOGGEDIN == False:
+            if LOGGED_IN == False:
                 print("You are not logged in")
             else:
                 clientFunc.logout(clientSocket)

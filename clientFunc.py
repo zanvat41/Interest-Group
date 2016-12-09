@@ -6,12 +6,14 @@ DEFAULT_N = 5
 USR_PATH = 'usrs/'
 EXTENDSION = '.txt'
 
+'''
+Group Map
 
-# Group Map
-# Just a quick write up of a group map for all the discussion
-# groups that will be use. Can be cleaned up some.
-# This will mainly be used to make the user file.
-# Key : group name  ,   Value : subscribed boolean(0/1)
+Just a quick write up of a group map for all the discussion
+groups that will be use. Can be cleaned up some.
+This will mainly be used to make the user file.
+Key : group name  ,   Value : subscribed boolean(0/1)
+'''
 groups = {
     'comp.programming': 0,
     'comp.lang.c': 0,
@@ -35,11 +37,13 @@ groups = {
     'sb.cse312': 0,
     'sb.cse320': 0
 }
+'''
+help
 
-# help
-# Prints a list of supported commands and sub-commands.
-# For each command or sub-command, a brief description of
-# its function and the syntax of usage are displayed
+Prints a list of supported commands and sub-commands.
+For each command or sub-command, a brief description of
+its function and the syntax of usage are displayed
+'''
 def printHelp():
     print("**This is a help menu, this menu can be brought up by typing the command help\n",
           "login",
@@ -52,65 +56,76 @@ def printHelp():
           sep="")
     return
 
-# login
-# Parameters ID, user ID for log in
-#
-# Allows the user to login using their ID number
-# returns true if the user was logged in and false if
-# the user was not logged in. Pretty much the way this
-# is written it will always return true, really no reason
-# for it not to.
-#
-# Return : True if user logged in, False if user is not
+'''
+login
+
+Parameters ID, user ID for log in
+
+Allows the user to login using their ID number
+returns true if the user was logged in and false if
+the user was not logged in. Pretty much the way this
+is written it will always return true, really no reason
+for it not to.
+
+Return : True if user logged in, False if user is not
+'''
 def login(ID):
     # Do login stuff
-    file = Path(USR_PATH + ID +EXTENDSION)
+    file = Path(USR_PATH + ID + EXTENDSION)
     if file.is_file():
         # read file and import data
-        print("FILE IS HERE")
         fillHisto(ID)
     else:
         # else create the file
-        print("FILE DOESNT EXIT")
+        print("User does not exist, creating user...")
         createHisto(ID)
 
     return True
-
+'''
 # ag
+
 # this command stands for “all groups”. It takes an optional argument, N,
 # and lists the names of all existing discussion groups, N groups at a time,
 # numbered 1 to N.  If N is not specified, a default value is used.
+'''
 def ag():
     return
+'''
+sg
 
-# sg
-# this command stands for “subscribed groups”. It takes an optional argument, N,
-# and lists the names of all subscribed groups, N groups at a time, numbered 1 to N.
-# If N is not specified, a default value is used.
+this command stands for “subscribed groups”. It takes an optional argument, N,
+and lists the names of all subscribed groups, N groups at a time, numbered 1 to N.
+If N is not specified, a default value is used.
+'''
 def sg():
     return
+''''
+rg
 
-# rg
-# this command stands for “read group”. It takes one mandatory argument, gname,
-# and an optional argument N, and displays the (status – new or not, time stamp, subject line)
-# of all posts in the group gname, N posts at a time. If N is not specified, a default value
-# is used. gname must be a subscribed group.
+this command stands for “read group”. It takes one mandatory argument, gname,
+and an optional argument N, and displays the (status – new or not, time stamp, subject line)
+of all posts in the group gname, N posts at a time. If N is not specified, a default value
+is used. gname must be a subscribed group.
+'''
 def rg():
     return
+'''
+Logout
 
-# Logout
-# Function takes no arguments. It logs out the current user
-# closes the socket and terminates the client program
+Function takes no arguments. It logs out the current user
+closes the socket and terminates the client.py program
+'''
 def logout(socket):
     print("Logging out...")
     socket.close()
     exit()
+'''
+createHisto
+Parameters ID, user ID to use for file name
 
-# createHisto
-# Parameters ID, user ID to use for file name
-#
-# If a user logs inand no file exist for the ID then create a new file for that user with the
-# ID as the file name
+If a user logs inand no file exist for the ID then create a new file for that user with the
+ID as the file name
+'''
 def createHisto(ID):
     fileName = USR_PATH + str(ID) + EXTENDSION
     file = open(fileName, 'w')
@@ -124,14 +139,16 @@ def createHisto(ID):
     file.close()
     return
 
-# fillHisto
-# Parameters ID, user ID for opening a file using the id name
-#
-# FillHisto opens the user's data file and it fills it with the current histo
-# if the user has no file this function will be called to write a default group
-# histo to the file.
-# Call this function to write to the data file with an updated histo
+'''
+fillHisto
 
+Parameters ID, user ID for opening a file using the id name
+
+FillHisto opens the user's data file and it fills it with the current histo
+if the user has no file this function will be called to write a default group
+histo to the file.
+Call this function to write to the data file with an updated histo
+'''
 def fillHisto(ID):
     fileName = USR_PATH + str(ID) + EXTENDSION
     file = open(fileName, 'r')
