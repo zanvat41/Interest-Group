@@ -3,7 +3,7 @@ from socket import *
 
 '''
 TCP Discussion Group Client/Sever
-Authors : Johnson Lu, Christopher Andrzejczyk, Lin Zhe
+Authors : Johnson Lu, Christopher Andrzejczyk, Zhe Lin
 
 Python 3.5
 '''
@@ -17,7 +17,7 @@ print("Client is connected...")
 # main function
 def main():
     # Constant Var for N
-    DEFAULT_N = 15
+    DEFAULT_N = 5
 
     # Log in status for user
     LOGGED_IN = False
@@ -41,7 +41,12 @@ def main():
             if LOGGED_IN == False:
                 print("please login first\n")
             else:
-                clientFunc.ag()
+                if(len(cmd) == 1):
+                    clientFunc.ag(DEFAULT_N)
+                elif(len(cmd) == 2):
+                    clientFunc.ag(cmd[1])
+                else:
+                    print("Command Error: ag, too many arguments")
         elif cmd[0] == "sg":
             if LOGGED_IN == False:
                 print("please login first\n")
