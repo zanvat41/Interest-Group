@@ -12,7 +12,12 @@ You are to develop this project in groups of 3 students.
 
 Project utilizes python 3.5.1
 
+#How to run
+Run server.py and client.py
+
 ##-----Authors------
-Johnson Lu,
-Christopher Andrzejczyk,
+Johnson Lu
+
+Christopher Andrzejczyk
+
 Lin Zhe
