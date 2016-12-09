@@ -206,7 +206,7 @@ def createHisto(ID):
 
         file.write(key)                                   # writes group name
         file.write(",")                                 # writes sep
-        if key == 'Author':  # gets the users name for post writing
+        if key == 'Author':  # gets the users name for post writing for first time users
             name = input('Please enter your name\n')
             file.write(name)
         else:
