@@ -1,12 +1,15 @@
 import os
-import time
+import datetime
+import threading
 from pathlib import Path
 import re
 
-USR_PATH = "serverData/"
+GROUP_PATH = "serverData/"
+USER_PATH = "server/Data/users"
 EXTENDSION = ".txt"
 
-
+currentPostID = 0
+fileLock = threading.Lock()
 '''
 Group Map
 
@@ -46,9 +49,15 @@ return file
 '''
 def openUsrFile(ID):
 
-    file = open((USR_PATH + ID + EXTENDSION), 'w+')
+    file = open((USER_PATH + ID + EXTENDSION), 'w+')
     return file
 
+'''
+Open group file for editing
+'''
+def openGroupFile(group):
+    file = open((GROUP_PATH + group + EXTENDSION), "w+")
+    return file
 '''
 sg
 Send client the number of new post for each of their subscribed
@@ -73,7 +82,7 @@ def rg(ID, clientsocket, serversocket, group):
         elif request == 'n':
             print('send next list of post in group')
         elif request == 'p':
-            postRequest()
+            postRequest(ID, clientsocket, group)
         elif request == 'q':
             break
         else:
@@ -88,8 +97,46 @@ def rg(ID, clientsocket, serversocket, group):
 
     return
 
-def postRequest():
+'''
+postRequest
+Will handle the request from the client to post
+Will listen for in coming messages from client and
+write it the a file for that group
+'''
+def postRequest(ID, clientsocket, group):
 
+    # Lock file for writing
+    with fileLock:
+        file = openGroupFile(group)
+        file.write("Group: " + group)
+        subject = clientsocket.recv(1024).decode()
+        file.write("Subject: " + subject)
+        file.write("Author: " + ID)
+        date = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+        file.write("Date: " + date)
+
+        # counter to check if the user wants to end post
+        endpost = 0
+        #user body post
+        while(1):
+            line = clientsocket.recv(1024).decode()
+
+            # find if user is trying to end post
+            if (endpost == 1):
+                if (line == "."):
+                    endpost += 1
+                else:
+                    endpost = 0  # reset endpost
+
+            if(line == "\n"):
+                endpost += 1
+
+            if(endpost == 3):
+                file.write("---ENDOFPOST---")
+                break                                   # '\n.\n' was found, exit
+
+            file.write(line)
+        file.close()
     return
 
 '''
@@ -98,28 +145,28 @@ by search thru the file for the group and regex the file for
 the the ids and compare
 '''
 def readPost(serversocket, group, postnumber):
-    file = open(group, 'w')
+    with fileLock:
+        file = open(group, 'w')
+        while 1:  # read FILE line by line
+            postID = file.readline()                    # read post line
+            tempbuf = postID.split(':')                 # get the ID of the post from file
+            ID = tempbuf[1]                             # check if post matches the ID that the user wants
+            if ID == postnumber:
+                serversocket.send(postID.encode())
+                authorName = file.readline()
+                serversocket.send(authorName.encode())
+                postDate = file.readline()
+                serversocket.send(postDate.encode())
+                subject = file.readline()
+                serversocket.send(subject.encode())
 
-    while 1:  # read FILE line by line
-        postID = file.readline()                    # read post line
-        tempbuf = postID.split(':')                 # get the ID of the post from file
-        ID = tempbuf[1]                             # check if post matches the ID that the user wants
-        if ID == postnumber:
-            serversocket.send(postID.encode())
-            authorName = file.readline()
-            serversocket.send(authorName.encode())
-            postDate = file.readline()
-            serversocket.send(postDate.encode())
-            subject = file.readline()
-            serversocket.send(subject.encode())
-
-            while 1:  # read POST and send post line by line till it reaches end of post
-                line = file.readline()
-                if line == "":  # end of file has been reached
-                    break
-                if line == "---ENDOFPOST---":  # end of post reached
-                    break
-                serversocket.send(line.encode())
+                while 1:  # read POST and send post line by line till it reaches end of post
+                    line = file.readline()
+                    if line == "":  # end of file has been reached
+                        break
+                    if line == "---ENDOFPOST---":  # end of post reached
+                        break
+                    serversocket.send(line.encode())
 
     file.close()
 
@@ -142,7 +189,7 @@ MAIN PROGRAM
 def createfiles():
 
     for i in groups.keys():
-        fileName = USR_PATH + i + EXTENDSION
+        fileName = GROUP_PATH + i + EXTENDSION
         file = open(fileName, 'w+')
         file.close()
     return

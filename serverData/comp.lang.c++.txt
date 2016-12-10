@@ -1,5 +1,5 @@
 PostID:0000000
-Author:Mitch kassler
+Author:Mitchkassler
 Date:Nov 12 19:34:03 EST 2016
 Subject:Bacon ipsum dolor amet
 Bacon ipsum dolor amet tri-tip sausage tail beef ribs shoulder filet mignon brisket ball tip.
@@ -11,7 +11,7 @@ Hamburger tenderloin ribeye, pastrami salami picanha chicken alcatra doner pork 
 swine pancetta.
 ---ENDOFPOST---
 PostID:0000001
-Author:Holly ham hock
+Author:HollyHamHock
 Date:Nov 12 19:34:03 EST 2016
 Subject:Jerky prosciutto boudin shankle
 Jerky prosciutto boudin shankle corned beef sausage. Tri-tip leberkas kevin frankfurter.
@@ -21,7 +21,7 @@ kielbasa. Doner flank beef ribs corned beef leberkas sirloin drumstick shankle g
 tenderloin hamburger tongue pork belly capicola. Pig hamburger capicola doner tenderloin.
 ---ENDOFPOST---
 PostID:0000002
-Author:Dave prosciutto
+Author:DaveProsciutto
 Date:Nov 12 19:34:03 EST 2016
 Subject:Pastrami salami beef ribs cow frankfurter
 Pastrami salami beef ribs cow frankfurter flank kevin jowl cupim tail spare ribs capicola swine.
