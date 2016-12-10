@@ -47,10 +47,6 @@ def handleClient(ID, clientsocket, serversocket):
         elif request == "lo":
             serverFunc.logout(ID)
             break
-        else:
-            # something went wrong
-            print("Invalid request")
-
 
 def exit():
     serverSocket.close()

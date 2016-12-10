@@ -38,7 +38,11 @@ groups = {
     'sb.cse320': 0
 }
 
-
+'''
+sg
+Send client the number of new post for each of their subscribed
+groups
+'''
 def sg(ID, socket):
     return
 

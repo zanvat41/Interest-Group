@@ -106,7 +106,7 @@ def login(ID):
     # Do login stuff
     file = Path(USR_PATH + ID + EXTENDSION)
     global userFile
-    userFile = file
+    userFile = USR_PATH + str(ID) + EXTENDSION
     if file.is_file():
         # read file and import data
         fillHisto(ID)
@@ -128,7 +128,7 @@ def login(ID):
 def ag(N):
     total = len(keys)
     remain = total
-    n = N
+    n = int(N)
     if n < remain:
         remain = remain - n
     else:
@@ -138,7 +138,7 @@ def ag(N):
     # First print out the first n groups
     for i in range(1, n+1):
         sub = " "
-        if groups.get(keys[total - remain - n + i - 1]) == 1:
+        if int(groups.get(keys[total - remain - n + i - 1])) == 1:
             sub = "s"
         print(str(i) + ". (" + sub + ") " + keys[total - remain - n + i - 1])
 
@@ -153,7 +153,8 @@ def ag(N):
             else:
                 # change the groups values
                 for i in range (1, len(cmd)):
-                    groups[keys[total - remain - n - 1 + cmd[i]]] = 1
+                    print(i)
+                    groups[keys[total - remain - n - 1 + int(cmd[i])]] = 1
 
                 # then update and write back to the user file
                 updateHisto()
@@ -163,7 +164,7 @@ def ag(N):
             else:
                 # change the groups values
                 for i in range (1, len(cmd)):
-                    groups[keys[total - remain - n - 1 + cmd[i]]] = 0
+                    groups[keys[total - remain - n - 1 + int(cmd[i])]] = 0
 
                 # then update and write back to the user file
                 updateHisto()
@@ -255,9 +256,9 @@ def createHisto(ID):
 
     for key, value in groups.items():
 
-        file.write(key)                                   # writes group name
-        file.write(",")                                 # writes sep
-        if key == 'Author':  # gets the users name for post writing for first time users
+        file.write(key)                                    # writes group name
+        file.write(",")                                    # writes sep
+        if key == 'Author':                                # gets the users name for post writing for first time users
             name = input('Please enter your name\n')
             file.write(name)
         else:

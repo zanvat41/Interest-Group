@@ -30,10 +30,12 @@ def main():
             clientFunc.printHelp()               # print help
         elif cmd[0] == "login":                 # log user in
             if LOGGED_IN == False:
-
-                LOGGED_IN = clientFunc.login(cmd[1])
-                print("User : " + cmd[1] + " is now logged in.\n")
-                clientSocket.send(cmd[1].encode())
+                if(len(cmd) < 2):
+                    print("No user ID provided")
+                else:
+                    LOGGED_IN = clientFunc.login(cmd[1])
+                    print("User : " + cmd[1] + " is now logged in.\n")
+                    clientSocket.send(cmd[1].encode())
             else:
                 print("You are already logged in.\n")
 
