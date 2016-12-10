@@ -7,6 +7,10 @@ DEFAULT_N = 5
 USR_PATH = 'usrs/'
 EXTENDSION = '.txt'
 
+# Some global vars
+userFile = ""
+
+
 '''
 Group Map
 
@@ -101,6 +105,8 @@ Return : True if user logged in, False if user is not
 def login(ID):
     # Do login stuff
     file = Path(USR_PATH + ID + EXTENDSION)
+    global userFile
+    userFile = file
     if file.is_file():
         # read file and import data
         fillHisto(ID)
@@ -121,42 +127,67 @@ def login(ID):
 '''
 def ag(N):
     total = len(keys)
-    remain = len(keys)
+    remain = total
     n = N
     if n < remain:
         remain = remain - n
     else:
         n = remain
+        remain = 0
 
     # First print out the first n groups
     for i in range(1, n+1):
         sub = " "
-        if groups.get(keys[i - 1]) == 1:
+        if groups.get(keys[total - remain - n + i - 1]) == 1:
             sub = "s"
-        print(str(i) + ". (" + sub + ") "+ keys[i - 1])
+        print(str(i) + ". (" + sub + ") " + keys[total - remain - n + i - 1])
 
 
     # Then take sub-commands
     while (1):
         cmd = input("ag >> ").split()  # arg[0] will always be the cmd
-        if cmd[0] == "s":  # and all following items are ARGS
+        # and all following items are ARGS
+        if cmd[0] == "s":
             if len(cmd) == 1:
                 print("Command Error: s, too few arguments")
             else:
+                # change the groups values
                 for i in range (1, len(cmd)):
                     groups[keys[total - remain - n - 1 + cmd[i]]] = 1
 
-                # then update the user file
-                # create a function like createHisto
+                # then update and write back to the user file
+                updateHisto()
+        elif cmd[0] == "u":  # similar to s
+            if len(cmd) == 1:
+                print("Command Error: u, too few arguments")
+            else:
+                # change the groups values
+                for i in range (1, len(cmd)):
+                    groups[keys[total - remain - n - 1 + cmd[i]]] = 0
 
+                # then update and write back to the user file
+                updateHisto()
+        elif cmd[0] == "n":
+            if remain <= 0:
+                print("No more groups")
+                continue
+            n = N
+            if n < remain:
+                remain = remain - n
+            else:
+                n = remain
+                remain = 0
 
+            # First print out the first n groups
+            for i in range(1, n + 1):
+                sub = " "
+                if groups.get(keys[total - remain - n + i - 1]) == 1:
+                    sub = "s"
+                print(str(i) + ". (" + sub + ") " + keys[total - remain - n + i - 1])
         elif cmd[0] == "q":
             break
-
-
-
-
-
+        else:
+            print("Incorrect Command. Press q to quit ag.")
     return
 
 
@@ -191,6 +222,26 @@ def logout(socket):
     print("Logging out...")
     socket.close()
     exit()
+
+
+'''
+updateHisto
+
+update subscribed/unsubscribed group to user file
+similar to createHisto
+'''
+def updateHisto():
+    file = open(userFile, 'w')
+    for key, value in groups.items():
+        file.write(key)                                   # writes key name
+        file.write(",")                                 # writes sep
+        file.write(str(groups.get(key)))                  # writes value
+        file.write("\n")                                # writes new line
+    file.close()
+    return
+
+
+
 '''
 createHisto
 Parameters ID, user ID to use for file name
