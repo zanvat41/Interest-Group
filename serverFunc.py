@@ -1,5 +1,6 @@
 import os
 import time
+from pathlib import Path
 import re
 
 USR_PATH = "serverData/"
@@ -38,6 +39,16 @@ groups = {
     'sb.cse320': 0
 }
 
+
+'''
+Open user file for editing
+return file
+'''
+def openUsrFile(ID):
+
+    file = open((USR_PATH + ID + EXTENDSION), 'w+')
+    return file
+
 '''
 sg
 Send client the number of new post for each of their subscribed
@@ -61,6 +72,8 @@ def rg(ID, clientsocket, serversocket, group):
             print('User has mark files as read, update users data')
         elif request == 'n':
             print('send next list of post in group')
+        elif request == 'p':
+            postRequest()
         elif request == 'q':
             break
         else:
@@ -75,6 +88,15 @@ def rg(ID, clientsocket, serversocket, group):
 
     return
 
+def postRequest():
+
+    return
+
+'''
+User requested to read a post. Get the post and find it by ID
+by search thru the file for the group and regex the file for
+the the ids and compare
+'''
 def readPost(serversocket, group, postnumber):
     file = open(group, 'w')
 

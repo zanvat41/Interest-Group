@@ -8,7 +8,7 @@ Authors : Johnson Lu, Christopher Andrzejczyk, Zhe Lin
 Python 3.5
 '''
 # Establish socket connection
-serverName = 'localhost'
+serverName = 'localhost'                                # *** REMEMBER TO SWITCH THIS TO CONNECT TO A USER SELECTED IP
 serverPort = 7257
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
@@ -25,7 +25,8 @@ def main():
     while(1):
 
         cmd = input("Client >> ").split()                           # takes user input and splits it into a list
-                                                                     #       arg[0] will always be the cmd
+
+                                                                   #       arg[0] will always be the cmd
         if cmd[0] == "help":                                        #       and all following items are ARGS
             clientFunc.printHelp()               # print help
         elif cmd[0] == "login":                 # log user in

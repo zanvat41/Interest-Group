@@ -20,7 +20,6 @@ This will mainly be used to make the user file.
 Key : group name  ,   Value : subscribed boolean(0/1)
 '''
 groups = {
-    'Author' : 'name',
     'comp.programming': 0,
     'comp.lang.c': 0,
     'comp.lang.python': 0,
@@ -153,7 +152,6 @@ def ag(N):
             else:
                 # change the groups values
                 for i in range (1, len(cmd)):
-                    print(i)
                     groups[keys[total - remain - n - 1 + int(cmd[i])]] = 1
 
                 # then update and write back to the user file
@@ -258,11 +256,11 @@ def createHisto(ID):
 
         file.write(key)                                    # writes group name
         file.write(",")                                    # writes sep
-        if key == 'Author':                                # gets the users name for post writing for first time users
-            name = input('Please enter your name\n')
-            file.write(name)
-        else:
-            file.write(str(groups.get(key)))                  # writes sub bool for group
+        #if key == 'Author':                                # gets the users name for post writing for first time users
+         #   name = input('Please enter your name\n')
+         #   file.write(name)
+        #else:
+        file.write(str(groups.get(key)))                  # writes sub bool for group
         file.write("\n")                                # writes new line
 
     file.close()
@@ -276,7 +274,6 @@ Parameters ID, user ID for opening a file using the id name
 FillHisto opens the user's data file and it fills it with the current histo
 if the user has no file this function will be called to write a default group
 histo to the file.
-Call this function to write to the data file with an updated histo
 '''
 def fillHisto(ID):
     fileName = USR_PATH + str(ID) + EXTENDSION
