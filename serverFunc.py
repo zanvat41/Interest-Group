@@ -140,7 +140,7 @@ def rg(ID, clientsocket, serversocket, group):
         print(TimeOUTMESS)
         return -1
 
-    showPost(ID,numToShow,serversocket,groupFile,userFile)
+    showPost(ID,numToShow,serversocket,groupFile,userFile)                      # handle showing post to client
 
     while(1):
         try:
@@ -168,26 +168,28 @@ def rg(ID, clientsocket, serversocket, group):
     return 0
 
 def showPost(ID, numToShow, serversocket, groupFile, userFile):
-    for x in range(0, numToShow):
-        isNew = True
-        line = groupFile.readline()
-        if line == ' ':                                                         # EOF has been reached
-            break
-        line = line.split(":")
-        if line[0] == 'PostID':
-            postID = line[1]
-            groupPostList.append(postID)
-            while (1):
-                ln = userFile.readline()
-                if ln == "":  # end of file has been reached
-                    break
-                if ln == postID:
-                    isNew = False
-            serversocket.send(isNew)                                            # sends isNew a bool for if a post is new or not
-        if line[0] == 'Date':
-            serversocket.send(line[1])                                          # sends date line
-        if line[0] == 'Subject':
-            serversocket.send(line[1])                                          # sends subject line
+    with fileLock:
+        for x in range(0, numToShow):
+            isNew = True
+            line = groupFile.readline()
+            if line == ' ':                                                         # EOF has been reached
+                break
+            line = line.split(":")
+            if line[0] == 'PostID':
+                postID = line[1]
+                groupPostList.append(postID)
+                while (1):
+                    ln = userFile.readline()
+                    if ln == "":  # end of file has been reached
+                        break
+                    if ln == postID:
+                        isNew = False
+                serversocket.send(isNew)                                            # sends isNew a bool for if a post is new or not
+            if line[0] == 'Date':
+                serversocket.send(line[1])                                          # sends date line
+            if line[0] == 'Subject':
+                serversocket.send(line[1])                                          # sends subject line
+    return
 '''
 findNewPost
 
