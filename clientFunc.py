@@ -77,14 +77,25 @@ For each command or sub-command, a brief description of
 its function and the syntax of usage are displayed
 '''
 def printHelp():
-    print("**This is a help menu, this menu can be brought up by typing the command help\n",
-          "login \n",
-          "ag[N]\tPrints a list of Discussion groups\n\t\t\tN: 1 to N for the number of",
-          "groups to be displayed\n\t\t\tDefault: 5\n",
-          "sg[N]\tPrints a list of Subscribed groups\n\t\t\t",
-          "N: 1 to N for the number of groups to be displayed\n\t\t\tDefault: 5\n",
-          "rg[N]\tPrints a list of groups to read from\n\t\t\t",
-          "N: 1 to N for the number of groups to be displayed\n\t\t\tDefault: 5\n",
+    print("**This is a help menu, this menu can be brought up by typing the command help\n\n",
+          "login: \t logs user in to determine which discussion groups are subscribed to. \n\n",          
+          "ag[N]: \t Prints a list of Discussion groups\n\t\t\tN: (optional) 1 to N for the number of ",
+          "groups to be displayed\n\t\t\tDefault: 5\n\n",
+          "\t\tSub-commands:\n\t\ts: Subscribe to one, or more, discussion groups numbered 1-to-N (ex. u 1 3)\n",
+          "\t\tu: Unsubscribe to one, or more, discussion groups numbered 1-to-N. (ex. u 1 3)\n",
+          "\t\tn: Lists next N discussion groups. If all discussion groups have been displayed, exit ag.\n",
+          "\t\tq: Exit ag.\n\n",
+          "sg[N]:\tPrints a list of Subscribed groups\n\t\t\t",
+          "N: (optional) 1 to N for the number of groups to be displayed\n\t\t\tDefault: 5\n\n",          
+          "rg[N]:\tPrints a list of groups to read from\n\t\t\t",
+          "N: (optional) 1 to N for the number of groups to be displayed\n\t\t\tDefault: 5\n\n",
+          "\t\tSub-commands:\n\t\tid: Displays the Nth post in a list. While displaying contents, has two sub-commands.",
+          "\n\t\t\tn: Displays N more lines of content.\n\t\t\tq: Exits post without displaying further content.",
+          "\n\t\tr: Marks a post, numbered one-to-N, as read. (ex. r 1)",
+          "\n\t\tn: Lists next N posts. If all posts have been displayed, exist rg.",
+          "\n\t\tp: Post to group. User is prompted to enter a one-line subject and then the content of the post.",
+          "\n\t\t   To finish writing a post, enter '.' on a blank line.",
+          "\n\t\tq: Exit rg. \n\nlogout:\t Logs the user out.",
           sep="")
     return
 
