@@ -150,7 +150,8 @@ def rg(ID, clientsocket, serversocket, group):
         else:
             # check if its a read command
             print("usr wants to read post")
-
+            while(1):
+                print("sub commands of read")
 
 
     return 0
