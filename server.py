@@ -17,8 +17,11 @@ def main():
     while (1):
         clientsocket, address = serverSocket.accept()
         print("Connection found")
-        ID = clientsocket.recv(1024).decode()
-        print("ID : " + ID + " has connected to the server")
+        try:
+            ID = clientsocket.recv(1024).decode()
+            print("ID : " + ID + " has connected to the server")
+        except:
+            print(serverFunc.TimeOUTMESS)
         try:
 
             newThread = threading.Thread(target = handleClient,
@@ -37,15 +40,19 @@ def main():
 def handleClient(ID, clientsocket, serversocket):
 
     while (1):
-        request = clientsocket.recv(1024).decode()
+        try:
+            request = clientsocket.recv(1024).decode()
 
-        if request == "sg":
-            serverFunc.sg(ID, clientsocket)
-        elif request == "rg":
-            group = clientsocket.recv(1024).decode()
-            serverFunc.rg(ID, clientsocket, serversocket, group)
-        elif request == "lo":
-            serverFunc.logout(ID)
+            if request == "sg":
+                serverFunc.sg(ID, clientsocket)
+            elif request == "rg":
+                group = clientsocket.recv(1024).decode()
+                serverFunc.rg(ID, clientsocket, serversocket, group)
+            elif request == "lo":
+                serverFunc.logout(ID)
+                break
+        except:
+            print(serverFunc.TimeOUTMESS)
             break
 
 def exit():

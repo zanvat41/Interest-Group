@@ -8,6 +8,9 @@ GROUP_PATH = "serverData/"
 USER_PATH = "server/Data/users"
 EXTENDSION = ".txt"
 
+# ERROR MESSAGES
+TimeOUTMESS = "A TIME OUT HAS OCCURRED"
+
 currentPostID = 0
 fileLock = threading.Lock()
 '''
@@ -64,7 +67,7 @@ Send client the number of new post for each of their subscribed
 groups
 '''
 def sg(ID, socket):
-    return
+    return 0
 
 '''
 rg
@@ -75,26 +78,36 @@ client request to read groups.
 def rg(ID, clientsocket, serversocket, group):
 
     while(1):
-        request = clientsocket.recv(1024).decode()
-
-        if request == 'r':
-            print('User has mark files as read, update users data')
-        elif request == 'n':
+        try:
+            request = clientsocket.recv(1024).decode()
+        except:
+            print(TimeOUTMESS)
+            return -1
+        req = request.split(" ")                                                # req is the list of cmd, 0 being the cmd itself and the following is the args
+        if req[0] == 'r':
+            markPost()
+        elif req[0] == 'n':
             print('send next list of post in group')
-        elif request == 'p':
+        elif req[0] == 'p':
             postRequest(ID, clientsocket, group)
-        elif request == 'q':
+        elif req[0] == 'q':
             break
         else:
             # check if its a read command
-            reg = re.compile('r /d*')
-            match = re.match(request)
-            if match:
-                req = request.split(' ')
-                postNum = req[1]
-                readPost(serversocket,group,postNum)
+            print("usr wants to read post")
 
 
+
+    return 0
+
+'''
+markPost
+Given a list of post to mark as read
+'''
+def markPost(markAsRead):
+    while(len(markAsRead) != 0):
+        postNum = markAsRead.pop()
+        #make that post as read
     return
 
 '''
@@ -109,7 +122,12 @@ def postRequest(ID, clientsocket, group):
     with fileLock:
         file = openGroupFile(group)
         file.write("Group: " + group)
-        subject = clientsocket.recv(1024).decode()
+        try:
+            subject = clientsocket.recv(1024).decode()
+        except:
+            print(TimeOUTMESS)
+            return -1
+
         file.write("Subject: " + subject)
         file.write("Author: " + ID)
         date = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
@@ -119,8 +137,11 @@ def postRequest(ID, clientsocket, group):
         endpost = 0
         #user body post
         while(1):
-            line = clientsocket.recv(1024).decode()
-
+            try:
+                line = clientsocket.recv(1024).decode()
+            except:
+                print(TimeOUTMESS)
+                return -1
             # find if user is trying to end post
             if (endpost == 1):
                 if (line == "."):
@@ -137,7 +158,7 @@ def postRequest(ID, clientsocket, group):
 
             file.write(line)
         file.close()
-    return
+    return 0
 
 '''
 User requested to read a post. Get the post and find it by ID
@@ -169,6 +190,7 @@ def readPost(serversocket, group, postnumber):
                     serversocket.send(line.encode())
 
     file.close()
+    return 0
 
 '''
 logout
@@ -179,7 +201,7 @@ handle client disconnecting. Remove or clean up any thing they used.
 '''
 def logout(ID):
     print("Client has logged out : " + ID)
-    return
+    return 0
 
 '''
 RUN THIS FUNCTION TO REBUILD
@@ -192,4 +214,4 @@ def createfiles():
         fileName = GROUP_PATH + i + EXTENDSION
         file = open(fileName, 'w+')
         file.close()
-    return
+    return 0
