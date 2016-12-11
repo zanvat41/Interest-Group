@@ -149,7 +149,13 @@ def rg(ID, clientsocket, serversocket, group):
             return -1
         req = request.split(" ")                                                # req is the list of cmd, 0 being the cmd itself and the following is the args
         if req[0] == 'r':
-            print("USER WANTS TO MARK POST")
+            try:
+                range = clientsocket.recv(1024).decode()  # server listens for a range ex: 1 2 3 4 or just 1
+            except:
+                print(TimeOUTMESS)
+                return
+            range = range.split(" ")                      # split range into an array
+            markPost(range, ID)
         elif req[0] == 'n':
             showPost(ID, numToShow, serversocket, groupFile, userFile)
         elif req[0] == 'p':
@@ -162,11 +168,15 @@ def rg(ID, clientsocket, serversocket, group):
             # check if its a read command
             print("usr wants to read post")
 
-
-
-
     return 0
 
+'''
+showPost
+
+This function is for the cmd rg, it sends the data for if a post is new,
+the date of the post and the subject of the post. This is done for N
+post
+'''
 def showPost(ID, numToShow, serversocket, groupFile, userFile):
     groupPostList.clear()                                                           # resets the groupPostList
     with fileLock:
@@ -234,10 +244,13 @@ def countPost(group):
 markPost
 Given a list of post to mark as read
 '''
-def markPost(markAsRead):
+def markPost(markAsRead, ID):
+    usrFile = openUsrFile(ID)
     while(len(markAsRead) != 0):
-        postNum = markAsRead.pop()
-        #mark that post as read
+        postIndex = markAsRead.pop()
+        postID = groupPostList[postIndex]
+        usrFile.write(postID,'a')
+    usrFile.close()
     return
 
 '''
