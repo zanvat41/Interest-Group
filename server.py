@@ -38,11 +38,13 @@ def main():
             print("thread joined")                          # and join them
 
 def handleClient(ID, clientsocket, serversocket):
+    currID = serverFunc.getCurrentPostID()
+    print(currID)
 
     while (1):
         try:
             request = clientsocket.recv(1024).decode()
-
+            print(currID)
             if request == "sg":
                 serverFunc.sg(ID, clientsocket, serversocket)
             elif request == "rg":

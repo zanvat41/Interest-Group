@@ -45,7 +45,6 @@ groups = {
     'sb.cse320': 0
 }
 
-
 '''
 Open user file for editing
 return file
@@ -61,6 +60,34 @@ Open group file for editing
 def openGroupFile(group):
     file = open((GROUP_PATH + group + EXTENDSION), "w+")
     return file
+
+'''
+getCurrentPostID
+
+gets the current postID from groups file in serverData
+This ID will keep track of the new ID number a post can have
+
+return current post ID
+'''
+def getCurrentPostID():
+    file = open((GROUP_PATH + 'groups'), 'r')
+    currentPostID = int(file.readline())
+    file.close()
+    return currentPostID
+
+'''
+writeCurrentPostID
+
+stores the current postID to the group file in serverData
+This should be called when ever a new post is added. So that
+if another client connects they can an updated number.
+'''
+def getWritePostID():
+    file = open((GROUP_PATH + 'groups'), 'w')
+    file.write(currentPostID)
+    file.close()
+    return 0
+
 '''
 sg
 Send client the number of new post for each of their subscribed
