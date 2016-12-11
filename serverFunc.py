@@ -130,12 +130,11 @@ parameter ID, socket, group
 client request to read groups.
 '''
 def rg(ID, clientsocket, serversocket, group):
-    groupPostList.clear()                                                       # resets the groupPostList
     groupFile = openGroupFile(group)
     userFile = openUsrFile(ID)
 
     try:
-        numToShow = clientsocket.recv(1024).decode()                            # listens for incoming N
+        numToShow = int(clientsocket.recv(1024).decode())                       # listens for incoming N
     except:
         print(TimeOUTMESS)
         return -1
@@ -165,9 +164,11 @@ def rg(ID, clientsocket, serversocket, group):
 
 
 
+
     return 0
 
 def showPost(ID, numToShow, serversocket, groupFile, userFile):
+    groupPostList.clear()                                                           # resets the groupPostList
     with fileLock:
         for x in range(0, numToShow):
             isNew = True
