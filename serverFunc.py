@@ -164,9 +164,11 @@ def rg(ID, clientsocket, serversocket, group):
             groupFile.close()
             userFile.close()
             break
+        elif isinstance( req[0], int ) & req[0] <= numToShow:                           # checks if it is an int:
+            postIndex = req[0]
+            readPost(serversocket, group, postIndex)
         else:
-            # check if its a read command
-            print("usr wants to read post")
+            print('request was not valid')
 
     return 0
 
