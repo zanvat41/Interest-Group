@@ -13,6 +13,8 @@ TimeOUTMESS = "A TIME OUT HAS OCCURRED"
 
 currentPostID = 0
 fileLock = threading.Lock()
+groupPostList = []                  # list to hold group post ID by index
+
 '''
 Group Map
 
@@ -98,11 +100,10 @@ def sg(ID, clientsocket,serversocket):
                                # if a post ID is found that's not in the users postID then that post is unread and therefore new
                                # to the user
     while(1):                                         # while client is still sending sub groups that it needs new post counts for
-        newPost = 0
-        postCnt = countPost(group)
         postRead = 0
         try:
             group = clientsocket.recv(1024).decode()  # get groupName from client that it wants the num of new post for
+            postCnt = countPost(group)
             idList = getPostIDList(group)             # get the list of ID in a group
 
             while(len(idList) != 0):
@@ -129,21 +130,34 @@ parameter ID, socket, group
 client request to read groups.
 '''
 def rg(ID, clientsocket, serversocket, group):
+    groupPostList.clear()                                                       # resets the groupPostList
+    groupFile = openGroupFile(group)
+    userFile = openUsrFile(ID)
+
+    try:
+        numToShow = clientsocket.recv(1024).decode()                            # listens for incoming N
+    except:
+        print(TimeOUTMESS)
+        return -1
+
+    showPost(ID,numToShow,serversocket,groupFile,userFile)
 
     while(1):
         try:
-            request = clientsocket.recv(1024).decode()
+            request = clientsocket.recv(1024).decode()                          # listens for incoming cmds like n, q, [ID], p
         except:
             print(TimeOUTMESS)
             return -1
         req = request.split(" ")                                                # req is the list of cmd, 0 being the cmd itself and the following is the args
         if req[0] == 'r':
-            markPost()
+            print("USER WANTS TO MARK POST")
         elif req[0] == 'n':
-            print('send next list of post in group')
+            showPost(ID, numToShow, serversocket, groupFile, userFile)
         elif req[0] == 'p':
             postRequest(ID, clientsocket, group)
         elif req[0] == 'q':
+            groupFile.close()
+            userFile.close()
             break
         else:
             # check if its a read command
@@ -153,6 +167,27 @@ def rg(ID, clientsocket, serversocket, group):
 
     return 0
 
+def showPost(ID, numToShow, serversocket, groupFile, userFile):
+    for x in range(0, numToShow):
+        isNew = True
+        line = groupFile.readline()
+        if line == ' ':                                                         # EOF has been reached
+            break
+        line = line.split(":")
+        if line[0] == 'PostID':
+            postID = line[1]
+            groupPostList.append(postID)
+            while (1):
+                ln = userFile.readline()
+                if ln == "":  # end of file has been reached
+                    break
+                if ln == postID:
+                    isNew = False
+            serversocket.send(isNew)                                            # sends isNew a bool for if a post is new or not
+        if line[0] == 'Date':
+            serversocket.send(line[1])                                          # sends date line
+        if line[0] == 'Subject':
+            serversocket.send(line[1])                                          # sends subject line
 '''
 findNewPost
 

@@ -43,12 +43,12 @@ def handleClient(ID, clientsocket, serversocket):
 
     while (1):
         try:
-            request = clientsocket.recv(1024).decode()
+            request = clientsocket.recv(1024).decode()                  # listen for incoming request like sg, rg, lo(logout)
             print(currID)
             if request == "sg":
                 serverFunc.sg(ID, clientsocket, serversocket)
             elif request == "rg":
-                group = clientsocket.recv(1024).decode()
+                group = clientsocket.recv(1024).decode()                # listens for incoming group name that the client wants to read
                 serverFunc.rg(ID, clientsocket, serversocket, group)
             elif request == "lo":
                 serverFunc.logout(ID)
