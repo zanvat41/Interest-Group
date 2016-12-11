@@ -44,7 +44,7 @@ def handleClient(ID, clientsocket, serversocket):
             request = clientsocket.recv(1024).decode()
 
             if request == "sg":
-                serverFunc.sg(ID, clientsocket)
+                serverFunc.sg(ID, clientsocket, serversocket)
             elif request == "rg":
                 group = clientsocket.recv(1024).decode()
                 serverFunc.rg(ID, clientsocket, serversocket, group)

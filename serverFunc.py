@@ -66,7 +66,33 @@ sg
 Send client the number of new post for each of their subscribed
 groups
 '''
-def sg(ID, socket):
+def sg(ID, clientsocket,serversocket):
+    usrfile = openUsrFile(ID)  # open user file that will hold a list of postID's that the user has read
+                               # if a post ID is found that's not in the users postID then that post is unread and therefore new
+                               # to the user
+    while(1):                                         # while client is still sending sub groups that it needs new post counts for
+        newPost = 0
+        postCnt = countPost(group)
+        postRead = 0
+        try:
+            group = clientsocket.recv(1024).decode()  # get groupName from client that it wants the num of new post for
+            idList = getPostIDList(group)             # get the list of ID in a group
+
+            while(len(idList) != 0):
+                idToCheck = idList.pop()              # remove a ID from the list and check to see if it was read by the user
+                while(1):
+                    line = usrfile.readline()
+                    if line == "":  # end of file has been reached
+                        break
+                    if line == idToCheck:
+                        postRead += 1
+            newPost = postCnt - postRead
+            serversocket.send(str(newPost).encode())  # send back the number of new post to the client for that group
+
+        except:
+            print(TimeOUTMESS)  # Timed out of the all sub groups have been served
+            break
+
     return 0
 
 '''
@@ -101,13 +127,52 @@ def rg(ID, clientsocket, serversocket, group):
     return 0
 
 '''
+findNewPost
+
+Finds the number of new post for a user
+returns a list of post ID found in a group
+'''
+def getPostIDList(group):
+    file = openGroupFile(group)
+    postList = []
+    with fileLock:
+        while(1):
+            line = file.readline()
+            if line == "":
+                break
+            wordArr = line.split(":")
+            if wordArr[0] == 'PostID':
+                postList.append(wordArr[1])
+
+    return postList
+'''
+countPost
+
+counts the number of post found in a group file
+returns the number of post for that group
+'''
+def countPost(group):
+    postCount = 0
+    file = openGroupFile(group)
+    with fileLock:
+        while(1):
+            line = file.readline()
+
+            if line == "":                                  # end of file reached
+                break
+            if line == "ENDOFPOST":
+                postCount += 1                              # post found increment
+
+    file.close()
+    return postCount
+'''
 markPost
 Given a list of post to mark as read
 '''
 def markPost(markAsRead):
     while(len(markAsRead) != 0):
         postNum = markAsRead.pop()
-        #make that post as read
+        #mark that post as read
     return
 
 '''
@@ -161,6 +226,8 @@ def postRequest(ID, clientsocket, group):
     return 0
 
 '''
+STILL A WORK IN PROGRESS
+
 User requested to read a post. Get the post and find it by ID
 by search thru the file for the group and regex the file for
 the the ids and compare
