@@ -11,7 +11,13 @@ Python 3.5
 serverName = 'localhost'                                # *** REMEMBER TO SWITCH THIS TO CONNECT TO A USER SELECTED IP
 serverPort = 7257
 clientSocket = socket(AF_INET, SOCK_STREAM)
-clientSocket.connect((serverName, serverPort))
+clientSocket.settimeout(10)                                 # Socket will try to connect for 10 seconds and then time out
+try:
+    clientSocket.connect((serverName, serverPort))
+except:
+    print("Client could not connect to server, please try again")
+    exit()
+
 print("Client is connected...")
 
 # main function
