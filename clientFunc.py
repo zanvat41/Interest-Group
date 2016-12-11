@@ -212,6 +212,8 @@ If N is not specified, a default value is used.
 '''
 def sg():
     return
+    
+    
 ''''
 rg
 
@@ -220,8 +222,72 @@ and an optional argument N, and displays the (status – new or not, time stamp,
 of all posts in the group gname, N posts at a time. If N is not specified, a default value
 is used. gname must be a subscribed group.
 '''
-def rg():
+def rg(gname, N, clientSocket):
+    # Check if given group name exists
+    if str(gname) not in keys:
+        print(str(gname) + " does not exist.")
+        return
+
+    # Send the server the group name
+    clientSocket.send(gname)
+
+    # And then N
+    clientSocket.send(N)
+
+    # Ask the server to give the newest N post, and then print if it is not empty
+    clientSocket.send("n")
+    postList = clientSocket.recv(1024)
+    if postList == "":
+        print("No more post")
+        # end server side
+        clientSocket.send("q")
+        # and end itself
+        return
+    else:
+        print(postList)
+
+    # Then take sub-commands
+    while (1):
+        cmd = input("rg >> ").split()  # arg[0] will always be the cmd
+        # and all following items are ARGS
+        if cmd[0] == "r":
+            #read post
+            print("mark post")
+        elif cmd[0] == "n":
+            # Ask the server to give the newest N post, and then print if it is not empty
+            clientSocket.send("n")
+            postList = clientSocket.recv(1024)
+            if postList == "":
+                print("No more post")
+                #end server side
+                clientSocket.send("q")
+                # end itself
+                break
+            else:
+                print(postList)
+        elif cmd[0] == "p":
+            print("post")
+            break
+        elif cmd[0] == "q":
+            clientSocket.send("q")
+            break
+        else:
+            while(1):
+                # take sub-commands for read
+                print("read")
+
+
+
+
+
+
+
+
+
+
     return
+
+
 '''
 Logout
 
