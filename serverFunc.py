@@ -129,7 +129,9 @@ parameter ID, socket, group
 client request to read groups.
 '''
 def rg(ID, clientsocket, serversocket, group):
-
+    # get N from client side
+    N = (int)(clientsocket.recv(1024))
+    
     while(1):
         try:
             request = clientsocket.recv(1024).decode()
