@@ -65,7 +65,14 @@ def main():
             if LOGGED_IN == False:
                 print("please login first\n")
             else:
-                clientFunc.rg()
+                if len(cmd) == 1:
+                    print("Not enough arguments. Group name needed.")
+                elif len(cmd) == 2:
+                    clientSocket.send("rg")
+                    clientFunc.rg(cmd[1], DEFAULT_N)
+                else:
+                    clientSocket.send("rg")
+                    clientFunc.rg(cmd[1], cmd[2])
         elif cmd[0] == "logout":
             if LOGGED_IN == False:
                 print("You are not logged in\n")
