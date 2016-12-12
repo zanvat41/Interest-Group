@@ -216,7 +216,7 @@ If N is not specified, a default value is used.
 '''
 def sg(N, clientSocket):
     # First get the subscribed groups and put them in a list
-    clientSocket.send('sg'.encode())
+    clientSocket.send('sg '.encode())
     subKeys = []
     for i in range(0, len(keys)):
         if int(groups.get(keys[i])) == 1:
@@ -228,7 +228,7 @@ def sg(N, clientSocket):
 
     if remain == 0:
         print("No more subscribed group")
-        clientSocket.send("q".encode())
+        clientSocket.send("q ".encode())
         return
         
     n = int(N)
@@ -240,13 +240,11 @@ def sg(N, clientSocket):
 
     #  print out the first n groups
     for i in range(1, n + 1):
-        clientSocket.send("n".encode())
+        clientSocket.send("n ".encode())
         newPost = " "
         # send the group name
-        clientSocket.send((subKeys[total - remain - n + i - 1]).encode())
-        ready = select.select([clientSocket], [], [], 15)
-        if ready[0]:
-            newNum = int(clientSocket.recv(1).decode())
+        clientSocket.send(((subKeys[total - remain - n + i - 1]) + " ").encode())
+        newNum = int(clientSocket.recv(1).decode())
         if newNum != 0:
             newPost = str(newNum)
         print(str(i) + ". " + newPost + " " + subKeys[total - remain - n + i - 1])
@@ -278,16 +276,16 @@ def sg(N, clientSocket):
 
             # print out the first n groups
             for i in range(1, n + 1):
-                clientSocket.send("n".encode())
+                clientSocket.send("n ".encode())
                 newPost = " "
                 # send the group name
-                clientSocket.send((subKeys[total - remain - n + i - 1]).encode())
+                clientSocket.send(((subKeys[total - remain - n + i - 1]) + " ").encode())
                 newNum = int(clientSocket.recv(1024).decode())
                 if newNum != 0:
                     newPost = str(newNum)
                 print(str(i) + ". " + newPost + " " + subKeys[total - remain - n + i - 1])
         elif cmd[0] == "q":
-            clientSocket.send("q".encode())
+            clientSocket.send("q ".encode())
             break
         else:
             print("Incorrect Command. Press q to quit sg.")
@@ -309,13 +307,13 @@ def rg(gname, N, clientSocket):
         return
 
     # Send the server the group name
-    clientSocket.send(gname.encode())
+    clientSocket.send(gname.encode()  + " ")
 
     # And then N
-    clientSocket.send(str(N).encode())
+    clientSocket.send(str(N).encode()  + " ")
 
     # Ask the server to give the newest N post, and then print if it is not empty
-    clientSocket.send("n".encode())
+    clientSocket.send("n ".encode())
     for i in range(0, N):
         message = str(i) + ". "
         # First check if there are any post remained. If so, check if the post is read or not
@@ -355,14 +353,14 @@ def rg(gname, N, clientSocket):
                 for i in range (min, max + 1):
                     list += str(i + numShown) + " "
                 # send it to server
-                clientSocket.send(list.encode())
+                clientSocket.send(list.encode()  + " ")
             else:
                 arg = (int)(cmd[1]) + numShown
-                clientSocket.send(str(arg).encode())
+                clientSocket.send(str(arg).encode()  + " ")
         elif cmd[0] == "n":
             numShown += N
             # Ask the server to give the newest N post, and then print if it is not empty
-            clientSocket.send("n".encode())
+            clientSocket.send("n ".encode())
             for i in range(0, N):
                 message = str(i) + ". "
                 # First check if there are any post remained. If so, check if the post is read or not
@@ -383,27 +381,27 @@ def rg(gname, N, clientSocket):
 
                 print(message)
         elif cmd[0] == "p":
-            clientSocket.send("p".encode())
+            clientSocket.send("p ".encode())
             print("Please Type In Title:")
             postTitle = input()
-            clientSocket.send(postTitle)
+            clientSocket.send(postTitle  + " ")
             print("Please Type In Content:")
             while(1):
                 postLine = input()
-                clientSocket.send(postLine.encode())
+                clientSocket.send(postLine.encode()  + " ")
                 writeStatus = clientSocket.recv(1024)
                 if writeStatus == "end":
                     break
         elif cmd[0] == "q":
-            clientSocket.send("q".encode())
+            clientSocket.send("q ".encode())
             break
         else:
             # This is the read post command
-            clientSocket.send(cmd[0].encode())
+            clientSocket.send(cmd[0].encode()  + " ")
             while(1):
                 sub = input("read post command >> ").split()
                 if sub[0] == "n":
-                    clientSocket.send("n".encode())
+                    clientSocket.send("n ".encode())
                     for i in range(0, N):
                         readLine = clientSocket.recv(1024).decode()
                         # If all contents have been shown, break for loop
@@ -413,7 +411,7 @@ def rg(gname, N, clientSocket):
                         else:
                             print(readLine)
                 elif sub[0] == "q":
-                    clientSocket.send("q".encode())
+                    clientSocket.send("q ".encode())
                     break
                 else:
                     print("Incorrect command. Type in q to quit reading.")

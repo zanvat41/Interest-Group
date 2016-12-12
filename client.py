@@ -12,7 +12,7 @@ serverName = 'localhost'                                # *** REMEMBER TO SWITCH
 serverPort = 7257
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.setblocking(0)
-clientSocket.settimeout(10)                                 # Socket will try to connect for 10 seconds and then time out
+clientSocket.settimeout(15)                                 # Socket will try to connect for 10 seconds and then time out
 try:
     clientSocket.connect((serverName, serverPort))
 except:
@@ -42,7 +42,7 @@ def main():
                 else:
                     LOGGED_IN = clientFunc.login(cmd[1])
                     print("User : " + cmd[1] + " is now logged in.\n")
-                    clientSocket.send(cmd[1].encode())
+                    clientSocket.send((cmd[1]).encode())
             else:
                 print("You are already logged in.\n")
 
@@ -73,20 +73,20 @@ def main():
                 if len(cmd) == 1:
                     print("Not enough arguments. Group name needed.")
                 elif len(cmd) == 2:
-                    clientSocket.send("rg".encode())
+                    clientSocket.send("rg ".encode())
                     clientFunc.rg(cmd[1], DEFAULT_N, clientSocket)
                 else:
-                    clientSocket.send("rg".encode())
+                    clientSocket.send("rg ".encode())
                     clientFunc.rg(cmd[1], cmd[2], clientSocket)
         elif cmd[0] == "logout":
             if LOGGED_IN == False:
                 print("You are not logged in\n")
             else:
-                clientSocket.send("lo".encode())
+                clientSocket.send("lo ".encode())
                 clientFunc.logout(clientSocket)
         elif cmd[0] == "quit":
             print("Exiting...\n")
-            clientSocket.send("lo".encode())
+            clientSocket.send("lo ".encode())
             clientSocket.close()
             exit()
         else:

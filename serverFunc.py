@@ -2,8 +2,7 @@ import os
 import datetime
 import threading
 import select
-from pathlib import Path
-import re
+import queue
 
 GROUP_PATH = "serverData/"
 USER_PATH = "serverData/users"
@@ -15,6 +14,7 @@ TimeOUTMESS = "A TIME OUT HAS OCCURRED"
 currentPostID = 0
 fileLock = threading.Lock()
 groupPostList = []                  # list to hold group post ID by index
+messageBuffer = queue.Queue()       # queue to hold incoming messages
 
 '''
 Group Map
@@ -53,7 +53,7 @@ Open user file for editing
 return file
 '''
 def openUsrFile(ID):
-
+    print("opening " + (USER_PATH + ID + EXTENDSION))
     file = open((USER_PATH + ID + EXTENDSION), 'r+')
     return file
 
@@ -101,15 +101,11 @@ def sg(ID, clientsocket):
                                # if a post ID is found that's not in the users postID then that post is unread and therefore new
                                # to the user
     while(1):                                         # take sub commands
-        ready = select.select([clientsocket], [], [], 15)
-        if ready[0]:
-            sub = clientsocket.recv(1).decode()
+        sub = getMessage()
         if sub == "n":
             postRead = 0
             try:
-                ready = select.select([clientsocket], [], [], 15)
-                if ready[0]:
-                    group = clientsocket.recv(1024).decode()  # get groupName from client that it wants the num of new post for
+                group = getMessage()                  # get groupName from client that it wants the num of new post for
 
                 postCnt = countPost(group)
                 idList = getPostIDList(group)             # get the list of ID in a group
@@ -122,8 +118,8 @@ def sg(ID, clientsocket):
                             break
                         if line == idToCheck:
                             postRead += 1
-                    newPost = postCnt - postRead
-                    clientsocket.send(str(newPost).encode())  # send back the number of new post to the client for that group
+                newPost = postCnt - postRead
+                clientsocket.send(str(newPost).encode())  # send back the number of new post to the client for that group
 
             except:
                 print(TimeOUTMESS)  # Timed out of the all sub groups have been served
@@ -378,6 +374,28 @@ def logout(ID):
     print("Client has logged out : " + ID)
     return 0
 
+def getMessage():
+    while(1):
+        message = messageBuffer.get()
+        if message is not None:
+            break
+    return message
+'''
+THIS IS CALLED BY A THREAD, DO NOT CALL THIS IN
+THE SERVERFUNC
+'''
+def listenForMessages(client):
+    while(1):
+        ready = select.select([client], [], [], 15)  # waits for date to be in the buffer
+        if ready[0]:  # item is found
+            request = client.recv(1024).decode()  # recv item
+            request = request.split(' ')
+            for x in request:
+                if x != '':
+                    messageBuffer.put(x)  # add it to the queue
+                if x == 'lo':
+                    break
+    return
 '''
 RUN THIS FUNCTION TO REBUILD
 SERVER DATA DIR. NOT FOR USE OF

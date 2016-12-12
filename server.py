@@ -39,10 +39,15 @@ def main():
 def handleClient(ID, clientsocket, serversocket):
     currID = serverFunc.getCurrentPostID()
     print(currID)
+    recvThread = threading.Thread(target = serverFunc.listenForMessages,
+                                  name = ('messageQueue' + ID),
+                                  args = (clientsocket,))
+    recvThread.daemon = True
+    recvThread.start()
 
     while (1):
         try:
-            request = clientsocket.recv(1024).decode()                  # listen for incoming request like sg, rg, lo(logout)
+            request = serverFunc.getMessage()                            # listen for incoming request like sg, rg, lo(logout)
             print(currID)
             if request == "sg":
                 serverFunc.sg(ID, clientsocket)
@@ -50,6 +55,7 @@ def handleClient(ID, clientsocket, serversocket):
                 group = clientsocket.recv(1024).decode()                # listens for incoming group name that the client wants to read
                 serverFunc.rg(ID, clientsocket, serversocket, group)
             elif request == "lo":
+                recvThread.join()
                 serverFunc.logout(ID)
                 break
         except:
