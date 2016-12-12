@@ -159,7 +159,7 @@ def rg(ID, clientsocket, serversocket, group):
         elif req[0] == 'n':
             showPost(ID, numToShow, serversocket, groupFile, userFile)
         elif req[0] == 'p':
-            postRequest(ID, clientsocket, group)
+            postRequest(ID, clientsocket, serversocket, group)
         elif req[0] == 'q':
             groupFile.close()
             userFile.close()
@@ -265,7 +265,7 @@ Will handle the request from the client to post
 Will listen for in coming messages from client and
 write it the a file for that group
 '''
-def postRequest(ID, clientsocket, group):
+def postRequest(ID, clientsocket, serversocket, group):
 
     # Lock file for writing
     with fileLock:
@@ -303,9 +303,11 @@ def postRequest(ID, clientsocket, group):
 
             if(endpost == 3):
                 file.write("---ENDOFPOST---")
+                serversocket.send("end")                # inform the client writing ended
                 break                                   # '\n.\n' was found, exit
 
             file.write(line)
+            serversocket.send("writing")                # inform the client the server is writing
         file.close()
     return 0
 
