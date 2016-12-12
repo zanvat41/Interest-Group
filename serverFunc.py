@@ -166,7 +166,7 @@ def rg(ID, clientsocket, serversocket, group):
             break
         elif isinstance( req[0], int ):                           # checks if it is an int:
             postIndex = req[0]
-            readPost(serversocket, group, postIndex)
+            readPost(serversocket, group, postIndex, numToShow)
         else:
             print('request was not valid')
 
@@ -318,14 +318,16 @@ User requested to read a post. Get the post and find it by ID
 by search thru the file for the group and regex the file for
 the the ids and compare
 '''
-def readPost(serversocket, group, postnumber):
+def readPost(serversocket, group, postnumber, N):
     with fileLock:
         file = open(group, 'w')
-        while 1:  # read FILE line by line
+        postFound = False
+        while not postFound:  # read FILE line by line
             postID = file.readline()                    # read post line
             tempbuf = postID.split(':')                 # get the ID of the post from file
             ID = tempbuf[1]                             # check if post matches the ID that the user wants
             if (int)(ID) == (int)(postnumber):
+                postFound = True
                 serversocket.send(postID.encode())
                 authorName = file.readline()
                 serversocket.send(authorName.encode())
@@ -334,13 +336,21 @@ def readPost(serversocket, group, postnumber):
                 subject = file.readline()
                 serversocket.send(subject.encode())
 
-                while 1:  # read POST and send post line by line till it reaches end of post
-                    line = file.readline()
-                    if line == "":  # end of file has been reached
+                while True:  # wait for sub-sub-command
+                    sub = serversocket.recv(1024)
+                    if sub == "n":
+                        for i in range(0, int(N)): # show N lines of the post
+                            line = file.readline()
+                            if line == "":  # end of file has been reached
+                                serversocket.send("---ENDOFPOST---")
+                                break
+                            elif line == "---ENDOFPOST---":  # end of post reached
+                                serversocket.send("---ENDOFPOST---")
+                                break
+                            else:
+                                serversocket.send(line.encode())
+                    elif sub == "q"
                         break
-                    if line == "---ENDOFPOST---":  # end of post reached
-                        break
-                    serversocket.send(line.encode())
 
     file.close()
     return 0
