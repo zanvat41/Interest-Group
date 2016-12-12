@@ -244,7 +244,7 @@ def sg(N, clientSocket):
         newPost = " "
         # send the group name
         clientSocket.send(((subKeys[total - remain - n + i - 1]) + " ").encode())
-        newNum = int(clientSocket.recv(1).decode())
+        newNum = int(recvData(clientSocket))
         if newNum != 0:
             newPost = str(newNum)
         print(str(i) + ". " + newPost + " " + subKeys[total - remain - n + i - 1])
@@ -280,7 +280,7 @@ def sg(N, clientSocket):
                 newPost = " "
                 # send the group name
                 clientSocket.send(((subKeys[total - remain - n + i - 1]) + " ").encode())
-                newNum = int(clientSocket.recv(1024).decode())
+                newNum = int(recvData(clientSocket))
                 if newNum != 0:
                     newPost = str(newNum)
                 print(str(i) + ". " + newPost + " " + subKeys[total - remain - n + i - 1])
@@ -307,17 +307,17 @@ def rg(gname, N, clientSocket):
         return
 
     # Send the server the group name
-    clientSocket.send(gname.encode()  + " ")
+    clientSocket.send((gname + " ").encode())
 
     # And then N
-    clientSocket.send(str(N).encode()  + " ")
+    clientSocket.send((str(N) + " ").encode())
 
     # Ask the server to give the newest N post, and then print if it is not empty
     clientSocket.send("n ".encode())
     for i in range(0, N):
         message = str(i) + ". "
         # First check if there are any post remained. If so, check if the post is read or not
-        isRead = clientSocket.recv(1024)
+        isRead = recvData(clientSocket)
         if isRead == "EOF":
             print("No more post")
             # end server side
@@ -327,10 +327,10 @@ def rg(gname, N, clientSocket):
         else:
             message += "N "
         # Then get the date
-        date = clientSocket.recv(1024)
+        date = recvData(clientSocket)
         message += date
         # Finally the title
-        title = clientSocket.recv(1024)
+        title = recvData(clientSocket)
         message(title)
 
         print(message)
@@ -353,10 +353,10 @@ def rg(gname, N, clientSocket):
                 for i in range (min, max + 1):
                     list += str(i + numShown) + " "
                 # send it to server
-                clientSocket.send(list.encode()  + " ")
+                clientSocket.send((list  + " ").encode())
             else:
                 arg = (int)(cmd[1]) + numShown
-                clientSocket.send(str(arg).encode()  + " ")
+                clientSocket.send((str(arg)  + " ").encode())
         elif cmd[0] == "n":
             numShown += N
             # Ask the server to give the newest N post, and then print if it is not empty
@@ -364,7 +364,7 @@ def rg(gname, N, clientSocket):
             for i in range(0, N):
                 message = str(i) + ". "
                 # First check if there are any post remained. If so, check if the post is read or not
-                isRead = clientSocket.recv(1024)
+                isRead = recvData(clientSocket)
                 if isRead == "EOF":
                     print("No more post")
                     break
@@ -373,10 +373,10 @@ def rg(gname, N, clientSocket):
                 else:
                     message += "N "
                 # Then get the date
-                date = clientSocket.recv(1024)
+                date = recvData(clientSocket)
                 message += date
                 # Finally the title
-                title = clientSocket.recv(1024)
+                title = recvData(clientSocket)
                 message(title)
 
                 print(message)
@@ -384,12 +384,12 @@ def rg(gname, N, clientSocket):
             clientSocket.send("p ".encode())
             print("Please Type In Title:")
             postTitle = input()
-            clientSocket.send(postTitle  + " ")
+            clientSocket.send((postTitle  + " ").encode())
             print("Please Type In Content:")
             while(1):
                 postLine = input()
-                clientSocket.send(postLine.encode()  + " ")
-                writeStatus = clientSocket.recv(1024)
+                clientSocket.send((postLine  + " ").encode())
+                writeStatus = recvData(clientSocket)
                 if writeStatus == "end":
                     break
         elif cmd[0] == "q":
@@ -397,13 +397,13 @@ def rg(gname, N, clientSocket):
             break
         else:
             # This is the read post command
-            clientSocket.send(cmd[0].encode()  + " ")
+            clientSocket.send((cmd[0]  + " ").encode())
             while(1):
                 sub = input("read post command >> ").split()
                 if sub[0] == "n":
                     clientSocket.send("n ".encode())
                     for i in range(0, N):
-                        readLine = clientSocket.recv(1024).decode()
+                        readLine = recvData(clientSocket)
                         # If all contents have been shown, break for loop
                         if readLine == "---ENDOFPOST---":
                             break
@@ -496,3 +496,9 @@ def fillHisto(ID):
         if data[0] in groups.keys():                    # checks if the data is correct
             groups[data[0]] = data[1]                   # sets the value
     file.close()
+
+def recvData(socket):
+    ready = select.select([socket], [], [], 500)
+    if ready[0]:
+        data = socket.recv(1024).decode()
+    return data
