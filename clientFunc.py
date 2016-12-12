@@ -69,7 +69,6 @@ keys = [
     'sb.cse312',
     'sb.cse320']
 
-
 '''
 help
 
@@ -195,7 +194,7 @@ def ag(N):
             # First print out the first n groups
             for i in range(1, n + 1):
                 sub = " "
-                if groups.get(keys[total - remain - n + i - 1]) == 1:
+                if int(groups.get(keys[total - remain - n + i - 1])) == 1:
                     sub = "s"
                 print(str(i) + ". (" + sub + ") " + keys[total - remain - n + i - 1])
         elif cmd[0] == "q":
@@ -203,9 +202,6 @@ def ag(N):
         else:
             print("Incorrect Command. Press q to quit ag.")
     return
-
-
-
 
 '''
 sg
@@ -290,8 +286,7 @@ def sg(N, clientSocket):
         else:
             print("Incorrect Command. Press q to quit sg.")
     return
-  
-  
+
 ''''
 rg
 
@@ -418,7 +413,6 @@ def rg(gname, N, clientSocket):
 
     return
 
-
 '''
 Logout
 
@@ -429,7 +423,6 @@ def logout(socket):
     print("Logging out...")
     socket.close()
     exit()
-
 
 '''
 updateHisto
@@ -446,8 +439,6 @@ def updateHisto():
         file.write("\n")                                # writes new line
     file.close()
     return
-
-
 
 '''
 createHisto
