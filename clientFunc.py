@@ -214,7 +214,7 @@ and lists the names of all subscribed groups, N groups at a time, numbered 1 to 
 If N is not specified, a default value is used.
 '''
 def sg(N, clientSocket):
-    # First get the subscribed groupsand put them in a list
+    # First get the subscribed groups and put them in a list
     subKeys = []
     for i in range(0, len(keys)):
         if groups.get(keys[i]) == 1:
@@ -227,6 +227,8 @@ def sg(N, clientSocket):
     if remain == 0:
         print("No more subscribed group")
         clientSocket.send("q".encode())
+        return
+        
     n = int(N)
     if n < remain:
         remain = remain - n
