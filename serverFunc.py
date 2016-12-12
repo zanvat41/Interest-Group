@@ -164,7 +164,7 @@ def rg(ID, clientsocket, serversocket, group):
             groupFile.close()
             userFile.close()
             break
-        elif isinstance( req[0], int ) & req[0] <= numToShow:                           # checks if it is an int:
+        elif isinstance( req[0], int ):                           # checks if it is an int:
             postIndex = req[0]
             readPost(serversocket, group, postIndex)
         else:
@@ -324,8 +324,8 @@ def readPost(serversocket, group, postnumber):
         while 1:  # read FILE line by line
             postID = file.readline()                    # read post line
             tempbuf = postID.split(':')                 # get the ID of the post from file
-            ID = tempbuf[1]                             # check if post matches the ID that the user wants
-            if ID == postnumber:
+            ID = inttempbuf[1]                             # check if post matches the ID that the user wants
+            if (int)(ID) == (int)(postnumber):
                 serversocket.send(postID.encode())
                 authorName = file.readline()
                 serversocket.send(authorName.encode())
