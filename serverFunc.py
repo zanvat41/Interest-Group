@@ -95,31 +95,33 @@ sg
 Send client the number of new post for each of their subscribed
 groups
 '''
-def sg(ID, clientsocket,serversocket):
+def sg(ID, serversocket):
     usrfile = openUsrFile(ID)  # open user file that will hold a list of postID's that the user has read
                                # if a post ID is found that's not in the users postID then that post is unread and therefore new
                                # to the user
-    while(1):                                         # while client is still sending sub groups that it needs new post counts for
-        postRead = 0
-        try:
-            group = clientsocket.recv(1024).decode()  # get groupName from client that it wants the num of new post for
-            postCnt = countPost(group)
-            idList = getPostIDList(group)             # get the list of ID in a group
+    while(1):                                         # take sub commands
+        sub = serversocket.recv(1024).decode()
+        if sub == "n":
+            postRead = 0
+            try:
+                group = serversocket.recv(1024).decode()  # get groupName from client that it wants the num of new post for
+                postCnt = countPost(group)
+                idList = getPostIDList(group)             # get the list of ID in a group
 
-            while(len(idList) != 0):
-                idToCheck = idList.pop()              # remove a ID from the list and check to see if it was read by the user
-                while(1):
-                    line = usrfile.readline()
-                    if line == "":  # end of file has been reached
-                        break
-                    if line == idToCheck:
-                        postRead += 1
-            newPost = postCnt - postRead
-            serversocket.send(str(newPost).encode())  # send back the number of new post to the client for that group
+                while(len(idList) != 0):
+                    idToCheck = idList.pop()              # remove a ID from the list and check to see if it was read by the user
+                    while(1):
+                        line = usrfile.readline()
+                        if line == "":  # end of file has been reached
+                            break
+                        if line == idToCheck:
+                            postRead += 1
+                newPost = postCnt - postRead
+                serversocket.send(str(newPost).encode())  # send back the number of new post to the client for that group
 
-        except:
-            print(TimeOUTMESS)  # Timed out of the all sub groups have been served
-            break
+            except:
+                print(TimeOUTMESS)  # Timed out of the all sub groups have been served
+                break
 
     return 0
 
@@ -129,12 +131,12 @@ parameter ID, socket, group
 
 client request to read groups.
 '''
-def rg(ID, clientsocket, serversocket, group):
+def rg(ID, serversocket, group):
     groupFile = openGroupFile(group)
     userFile = openUsrFile(ID)
 
     try:
-        numToShow = int(clientsocket.recv(1024).decode())                       # listens for incoming N
+        numToShow = int(serversocket.recv(1024).decode())                       # listens for incoming N
     except:
         print(TimeOUTMESS)
         return -1
@@ -143,14 +145,14 @@ def rg(ID, clientsocket, serversocket, group):
 
     while(1):
         try:
-            request = clientsocket.recv(1024).decode()                          # listens for incoming cmds like n, q, [ID], p
+            request = serversocket.recv(1024).decode()                          # listens for incoming cmds like n, q, [ID], p
         except:
             print(TimeOUTMESS)
             return -1
         req = request.split(" ")                                                # req is the list of cmd, 0 being the cmd itself and the following is the args
         if req[0] == 'r':
             try:
-                range = clientsocket.recv(1024).decode()  # server listens for a range ex: 1 2 3 4 or just 1
+                range = serversocket.recv(1024).decode()  # server listens for a range ex: 1 2 3 4 or just 1
             except:
                 print(TimeOUTMESS)
                 return
@@ -159,7 +161,7 @@ def rg(ID, clientsocket, serversocket, group):
         elif req[0] == 'n':
             showPost(ID, numToShow, serversocket, groupFile, userFile)
         elif req[0] == 'p':
-            postRequest(ID, clientsocket, serversocket, group)
+            postRequest(ID, serversocket, group)
         elif req[0] == 'q':
             groupFile.close()
             userFile.close()
@@ -265,14 +267,14 @@ Will handle the request from the client to post
 Will listen for in coming messages from client and
 write it the a file for that group
 '''
-def postRequest(ID, clientsocket, serversocket, group):
+def postRequest(ID, serversocket, group):
 
     # Lock file for writing
     with fileLock:
         file = openGroupFile(group)
         file.write("Group: " + group)
         try:
-            subject = clientsocket.recv(1024).decode()
+            subject = serversocket.recv(1024).decode()
         except:
             print(TimeOUTMESS)
             return -1
@@ -287,7 +289,7 @@ def postRequest(ID, clientsocket, serversocket, group):
         #user body post
         while(1):
             try:
-                line = clientsocket.recv(1024).decode()
+                line = serversocket.recv(1024).decode()
             except:
                 print(TimeOUTMESS)
                 return -1
