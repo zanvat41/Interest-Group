@@ -69,10 +69,10 @@ def main():
                     print("Not enough arguments. Group name needed.")
                 elif len(cmd) == 2:
                     clientSocket.send("rg".encode())
-                    clientFunc.rg(cmd[1], DEFAULT_N)
+                    clientFunc.rg(cmd[1], DEFAULT_N, clientSocket)
                 else:
                     clientSocket.send("rg".encode())
-                    clientFunc.rg(cmd[1], cmd[2])
+                    clientFunc.rg(cmd[1], cmd[2], clientSocket)
         elif cmd[0] == "logout":
             if LOGGED_IN == False:
                 print("You are not logged in\n")

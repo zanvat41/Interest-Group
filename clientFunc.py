@@ -232,7 +232,7 @@ def rg(gname, N, clientSocket):
     clientSocket.send(gname.encode())
 
     # And then N
-    clientSocket.send(N.encode())
+    clientSocket.send(N)
 
     # Ask the server to give the newest N post, and then print if it is not empty
     clientSocket.send("n".encode())
