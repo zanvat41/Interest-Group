@@ -182,10 +182,13 @@ post
 def showPost(ID, numToShow, serversocket, groupFile, userFile):
     groupPostList.clear()                                                           # resets the groupPostList
     with fileLock:
-        for x in range(0, numToShow):
-            isNew = True
+        x = 0;
+        while x < numToShow:
+            isNew = "True"
             line = groupFile.readline()
             if line == ' ':                                                         # EOF has been reached
+                # informe client
+                serversocket.send("EOF")
                 break
             line = line.split(":")
             if line[0] == 'PostID':
@@ -196,12 +199,13 @@ def showPost(ID, numToShow, serversocket, groupFile, userFile):
                     if ln == "":  # end of file has been reached
                         break
                     if ln == postID:
-                        isNew = False
+                        isNew = "False"
                 serversocket.send(isNew)                                            # sends isNew a bool for if a post is new or not
             if line[0] == 'Date':
                 serversocket.send(line[1])                                          # sends date line
             if line[0] == 'Subject':
                 serversocket.send(line[1])                                          # sends subject line
+                x += 1
     return
 '''
 findNewPost
