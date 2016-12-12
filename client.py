@@ -61,9 +61,9 @@ def main():
                 print("please login first\n")
             else:
                 if(len(cmd) == 1):
-                    clientFunc.sg(DEFAULT_N)
+                    clientFunc.sg(DEFAULT_N, clientSocket)
                 elif(len(cmd) == 2):
-                    clientFunc.sg(cmd[1])
+                    clientFunc.sg(cmd[1], clientSocket)
                 else:
                     print("Command Error: sg, too many arguments")
         elif cmd[0] == "rg":
