@@ -141,7 +141,7 @@ def rg(ID, clientsocket, serversocket, group):
     userFile = openUsrFile(ID)
 
     try:
-        numToShow = int(clientsocket.recv(1024).decode())                       # listens for incoming N
+        numToShow = int(getMessage())                       # listens for incoming N
     except:
         print(TimeOUTMESS)
         return -1
@@ -150,14 +150,14 @@ def rg(ID, clientsocket, serversocket, group):
 
     while(1):
         try:
-            request = clientsocket.recv(1).decode()                          # listens for incoming cmds like n, q, [ID], p
+            request = getMessage()                           # listens for incoming cmds like n, q, [ID], p
         except:
             print(TimeOUTMESS)
             return -1
         req = request.split(" ")                                                # req is the list of cmd, 0 being the cmd itself and the following is the args
         if req[0] == 'r':
             try:
-                range = clientsocket.recv(1024).decode()  # server listens for a range ex: 1 2 3 4 or just 1
+                range = getMessage()   # server listens for a range ex: 1 2 3 4 or just 1
             except:
                 print(TimeOUTMESS)
                 return
@@ -280,7 +280,7 @@ def postRequest(ID, clientsocket, serversocket, group):
         file = openGroupFile(group)
         file.write("Group: " + group)
         try:
-            subject = clientsocket.recv(1024).decode()
+            subject = getMessage()
         except:
             print(TimeOUTMESS)
             return -1
@@ -295,7 +295,7 @@ def postRequest(ID, clientsocket, serversocket, group):
         #user body post
         while(1):
             try:
-                line = clientsocket.recv(1024).decode()
+                line = getMessage()
             except:
                 print(TimeOUTMESS)
                 return -1
@@ -345,7 +345,7 @@ def readPost(clientsocket, serversocket, group, postnumber, N):
                 serversocket.send(subject.encode())
 
                 while 1:  # waitting for sub commands
-                    sub = clientsocket.recv(1024).decode()
+                    sub = getMessage()
                     if sub == "n":
                         for i in range(0, int(N)):
                             line = file.readline()
@@ -388,7 +388,7 @@ def listenForMessages(client):
     while(1):
         ready = select.select([client], [], [], 15)  # waits for date to be in the buffer
         if ready[0]:  # item is found
-            request = client.recv(1024).decode()  # recv item
+            request = getMessage()   # recv item
             request = request.split(' ')
             for x in request:
                 if x != '':
