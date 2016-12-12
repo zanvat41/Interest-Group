@@ -229,13 +229,13 @@ def rg(gname, N, clientSocket):
         return
 
     # Send the server the group name
-    clientSocket.send(gname)
+    clientSocket.send(gname.encode())
 
     # And then N
-    clientSocket.send(N)
+    clientSocket.send(N.encode())
 
     # Ask the server to give the newest N post, and then print if it is not empty
-    clientSocket.send("n")
+    clientSocket.send("n".encode())
     for i in range(0, N):
         message = str(i) + ". "
         # First check if there are any post remained. If so, check if the post is read or not
@@ -275,14 +275,14 @@ def rg(gname, N, clientSocket):
                 for i in range (min, max + 1):
                     list += str(i + numShown) + " "
                 # send it to server
-                clientSocket.send(list)
+                clientSocket.send(list.encode())
             else:
                 arg = (int)(cmd[1]) + numShown
-                clientSocket.send(str(arg))
+                clientSocket.send(str(arg).encode())
         elif cmd[0] == "n":
             numShown += N
             # Ask the server to give the newest N post, and then print if it is not empty
-            clientSocket.send("n")
+            clientSocket.send("n".encode())
             for i in range(0, N):
                 message = str(i) + ". "
                 # First check if there are any post remained. If so, check if the post is read or not
@@ -303,19 +303,19 @@ def rg(gname, N, clientSocket):
 
                 print(message)
         elif cmd[0] == "p":
-            clientSocket.send("p")
+            clientSocket.send("p".encode())
             print("Please Type In Title:")
             postTitle = input()
             clientSocket.send(postTitle)
             print("Please Type In Content:")
             while(1):
                 postLine = input()
-                clientSocket.send(postLine)
+                clientSocket.send(postLine.encode())
                 writeStatus = clientSocket.recv(1024)
                 if writeStatus == "end":
                     break
         elif cmd[0] == "q":
-            clientSocket.send("q")
+            clientSocket.send("q".encode())
             break
         else:
             while(1):

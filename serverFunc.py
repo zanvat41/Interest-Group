@@ -164,7 +164,7 @@ def rg(ID, clientsocket, serversocket, group):
             groupFile.close()
             userFile.close()
             break
-        elif isinstance( req[0], int ):                           # checks if it is an int:
+        elif isinstance(int(req[0]), int):                           # checks if it is an int:
             postIndex = req[0]
             readPost(serversocket, group, postIndex)
         else:
