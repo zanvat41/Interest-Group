@@ -213,7 +213,78 @@ this command stands for “subscribed groups”. It takes an optional argument, 
 and lists the names of all subscribed groups, N groups at a time, numbered 1 to N.
 If N is not specified, a default value is used.
 '''
-def sg():
+def sg(N, clientSocket):
+    # First get the subscribed groupsand put them in a list
+    subKeys = []
+    for i in range(0, len(keys)):
+        if groups.get(keys[i]) == 1:
+            subKeys.append(keys[i])
+
+    total = len(subKeys)
+
+    remain = total
+
+    if remain == 0:
+        print("No more subscribed group")
+        clientSocket.send("q".encode())
+    n = int(N)
+    if n < remain:
+        remain = remain - n
+    else:
+        n = remain
+        remain = 0
+
+    #  print out the first n groups
+    for i in range(1, n + 1):
+        clientSocket.send("n".encode())
+        newPost = " "
+        # send the group name
+        clientSocket.send((subKeys[total - remain - n + i - 1]).encode())
+        newNum = int(clientSocket.recv(1024).decode())
+        if newNum != 0:
+            newPost = str(newNum)
+        print(str(i) + ". " + newPost + " " + subKeys[total - remain - n + i - 1])
+
+    # Then take sub-commands
+    while (1):
+        cmd = input("sg >> ").split()  # arg[0] will always be the cmd
+        # and all following items are ARGS
+        if cmd[0] == "u":  # unsubscribed group
+            if len(cmd) == 1:
+                print("Command Error: u, too few arguments")
+            else:
+                # change the groups values
+                for i in range(1, len(cmd)):
+                    groups[subKeys[total - remain - n - 1 + int(cmd[i])]] = 0
+
+                # then update and write back to the user file
+                updateHisto()
+        elif cmd[0] == "n":
+            if remain <= 0:
+                print("No more subscribed group")
+                continue
+            n = int(N)
+            if n < remain:
+                remain = remain - n
+            else:
+                n = remain
+                remain = 0
+
+            # print out the first n groups
+            for i in range(1, n + 1):
+                clientSocket.send("n".encode())
+                newPost = " "
+                # send the group name
+                clientSocket.send((subKeys[total - remain - n + i - 1]).encode())
+                newNum = int(clientSocket.recv(1024).decode())
+                if newNum != 0:
+                    newPost = str(newNum)
+                print(str(i) + ". " + newPost + " " + subKeys[total - remain - n + i - 1])
+        elif cmd[0] == "q":
+            clientSocket.send("q".encode())
+            break
+        else:
+            print("Incorrect Command. Press q to quit sg.")
     return
   
   
