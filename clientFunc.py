@@ -303,8 +303,17 @@ def rg(gname, N, clientSocket):
 
                 print(message)
         elif cmd[0] == "p":
-            print("post")
-            break
+            clientSocket.send("p")
+            print("Please Type In Title:")
+            postTitle = input()
+            clientSocket.send(postTitle)
+            print("Please Type In Content:")
+            while(1):
+                postLine = input()
+                clientSocket.send(postLine)
+                writeStatus = clientSocket.recv(1024)
+                if writeStatus == "end":
+                    break
         elif cmd[0] == "q":
             clientSocket.send("q")
             break
