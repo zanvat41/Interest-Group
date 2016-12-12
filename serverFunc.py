@@ -388,7 +388,7 @@ def listenForMessages(client):
     while(1):
         ready = select.select([client], [], [], 15)  # waits for date to be in the buffer
         if ready[0]:  # item is found
-            request = getMessage()   # recv item
+            request = client.recv(1024).decode()  # recv item
             request = request.split(' ')
             for x in request:
                 if x != '':
