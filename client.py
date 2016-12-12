@@ -60,7 +60,12 @@ def main():
             if LOGGED_IN == False:
                 print("please login first\n")
             else:
-                clientFunc.sg()
+                if(len(cmd) == 1):
+                    clientFunc.sg(DEFAULT_N)
+                elif(len(cmd) == 2):
+                    clientFunc.sg(cmd[1])
+                else:
+                    print("Command Error: sg, too many arguments")
         elif cmd[0] == "rg":
             if LOGGED_IN == False:
                 print("please login first\n")
