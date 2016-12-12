@@ -1,6 +1,7 @@
 import os
 import math
 from pathlib import Path
+import select
 
 # Declare CONSTANT vars
 DEFAULT_N = 5
@@ -215,9 +216,10 @@ If N is not specified, a default value is used.
 '''
 def sg(N, clientSocket):
     # First get the subscribed groups and put them in a list
+    clientSocket.send('sg'.encode())
     subKeys = []
     for i in range(0, len(keys)):
-        if groups.get(keys[i]) == 1:
+        if int(groups.get(keys[i])) == 1:
             subKeys.append(keys[i])
 
     total = len(subKeys)
@@ -242,7 +244,9 @@ def sg(N, clientSocket):
         newPost = " "
         # send the group name
         clientSocket.send((subKeys[total - remain - n + i - 1]).encode())
-        newNum = int(clientSocket.recv(1024).decode())
+        ready = select.select([clientSocket], [], [], 15)
+        if ready[0]:
+            newNum = int(clientSocket.recv(1).decode())
         if newNum != 0:
             newPost = str(newNum)
         print(str(i) + ". " + newPost + " " + subKeys[total - remain - n + i - 1])

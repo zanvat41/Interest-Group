@@ -23,7 +23,6 @@ def main():
         except:
             print(serverFunc.TimeOUTMESS)
         try:
-
             newThread = threading.Thread(target = handleClient,
                                          name = ("client" + ID),
                                          args = (ID, clientsocket,serverSocket,))
@@ -31,7 +30,7 @@ def main():
             clientList.append(newThread)
             newThread.start()
         except:
-            print("ERROR : unable to create thread for user " + ID)
+            print("ERROR : unable to create thread for user ")
 
         for x in clientList:
             x.join()                                          # loop thur list clientList
@@ -46,7 +45,7 @@ def handleClient(ID, clientsocket, serversocket):
             request = clientsocket.recv(1024).decode()                  # listen for incoming request like sg, rg, lo(logout)
             print(currID)
             if request == "sg":
-                serverFunc.sg(ID, clientsocket, serversocket)
+                serverFunc.sg(ID, clientsocket)
             elif request == "rg":
                 group = clientsocket.recv(1024).decode()                # listens for incoming group name that the client wants to read
                 serverFunc.rg(ID, clientsocket, serversocket, group)

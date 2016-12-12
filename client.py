@@ -11,6 +11,7 @@ Python 3.5
 serverName = 'localhost'                                # *** REMEMBER TO SWITCH THIS TO CONNECT TO A USER SELECTED IP
 serverPort = 7257
 clientSocket = socket(AF_INET, SOCK_STREAM)
+clientSocket.setblocking(0)
 clientSocket.settimeout(10)                                 # Socket will try to connect for 10 seconds and then time out
 try:
     clientSocket.connect((serverName, serverPort))
@@ -31,8 +32,7 @@ def main():
     while(1):
 
         cmd = input("Client >> ").split()                           # takes user input and splits it into a list
-
-                                                                   #       arg[0] will always be the cmd
+                                                               #       arg[0] will always be the cmd
         if cmd[0] == "help":                                        #       and all following items are ARGS
             clientFunc.printHelp()               # print help
         elif cmd[0] == "login":                 # log user in

@@ -1,11 +1,12 @@
 import os
 import datetime
 import threading
+import select
 from pathlib import Path
 import re
 
 GROUP_PATH = "serverData/"
-USER_PATH = "server/Data/users"
+USER_PATH = "serverData/users"
 EXTENDSION = ".txt"
 
 # ERROR MESSAGES
@@ -53,14 +54,14 @@ return file
 '''
 def openUsrFile(ID):
 
-    file = open((USER_PATH + ID + EXTENDSION), 'w+')
+    file = open((USER_PATH + ID + EXTENDSION), 'r+')
     return file
 
 '''
 Open group file for editing
 '''
 def openGroupFile(group):
-    file = open((GROUP_PATH + group + EXTENDSION), "w+")
+    file = open((GROUP_PATH + group + EXTENDSION), "r+")
     return file
 
 '''
@@ -95,16 +96,21 @@ sg
 Send client the number of new post for each of their subscribed
 groups
 '''
-def sg(ID, clientsocket, serversocket):
+def sg(ID, clientsocket):
     usrfile = openUsrFile(ID)  # open user file that will hold a list of postID's that the user has read
                                # if a post ID is found that's not in the users postID then that post is unread and therefore new
                                # to the user
     while(1):                                         # take sub commands
-        sub = clientsocket.recv(1024).decode()
+        ready = select.select([clientsocket], [], [], 15)
+        if ready[0]:
+            sub = clientsocket.recv(1).decode()
         if sub == "n":
             postRead = 0
             try:
-                group = clientsocket.recv(1024).decode()  # get groupName from client that it wants the num of new post for
+                ready = select.select([clientsocket], [], [], 15)
+                if ready[0]:
+                    group = clientsocket.recv(1024).decode()  # get groupName from client that it wants the num of new post for
+
                 postCnt = countPost(group)
                 idList = getPostIDList(group)             # get the list of ID in a group
 
@@ -116,8 +122,8 @@ def sg(ID, clientsocket, serversocket):
                             break
                         if line == idToCheck:
                             postRead += 1
-                newPost = postCnt - postRead
-                serversocket.send(str(newPost).encode())  # send back the number of new post to the client for that group
+                    newPost = postCnt - postRead
+                    clientsocket.send(str(newPost).encode())  # send back the number of new post to the client for that group
 
             except:
                 print(TimeOUTMESS)  # Timed out of the all sub groups have been served
@@ -148,7 +154,7 @@ def rg(ID, clientsocket, serversocket, group):
 
     while(1):
         try:
-            request = clientsocket.recv(1024).decode()                          # listens for incoming cmds like n, q, [ID], p
+            request = clientsocket.recv(1).decode()                          # listens for incoming cmds like n, q, [ID], p
         except:
             print(TimeOUTMESS)
             return -1
@@ -229,6 +235,7 @@ def getPostIDList(group):
             wordArr = line.split(":")
             if wordArr[0] == 'PostID':
                 postList.append(wordArr[1])
+    file.close()
 
     return postList
 '''
@@ -246,7 +253,7 @@ def countPost(group):
 
             if line == "":                                  # end of file reached
                 break
-            if line == "ENDOFPOST":
+            if line == "---ENDOFPOST---\n" or line == "---ENDOFPOST---":
                 postCount += 1                              # post found increment
 
     file.close()
@@ -344,7 +351,7 @@ def readPost(clientsocket, serversocket, group, postnumber, N):
                 while 1:  # waitting for sub commands
                     sub = clientsocket.recv(1024).decode()
                     if sub == "n":
-                        for i in range(0, int(N))
+                        for i in range(0, int(N)):
                             line = file.readline()
                             if line == "":  # end of file has been reached
                                 serversocket.send("---ENDOFPOST---".encode())
