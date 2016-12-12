@@ -212,8 +212,8 @@ If N is not specified, a default value is used.
 '''
 def sg():
     return
-    
-    
+  
+  
 ''''
 rg
 
@@ -236,35 +236,72 @@ def rg(gname, N, clientSocket):
 
     # Ask the server to give the newest N post, and then print if it is not empty
     clientSocket.send("n")
-    postList = clientSocket.recv(1024)
-    if postList == "":
-        print("No more post")
-        # end server side
-        clientSocket.send("q")
-        # and end itself
-        return
-    else:
-        print(postList)
+    for i in range(0, N):
+        message = str(i) + ". "
+        # First check if there are any post remained. If so, check if the post is read or not
+        isRead = clientSocket.recv(1024)
+        if isRead == "EOF":
+            print("No more post")
+            # end server side
+            break
+        elif isRead == "True":
+            message += "  "
+        else:
+            message += "N "
+        # Then get the date
+        date = clientSocket.recv(1024)
+        message += date
+        # Finally the title
+        title = clientSocket.recv(1024)
+        message(title)
+
+        print(message)
+
+    numShown = 0  # The number of posts shown
 
     # Then take sub-commands
     while (1):
         cmd = input("rg >> ").split()  # arg[0] will always be the cmd
         # and all following items are ARGS
         if cmd[0] == "r":
-            #read post
-            print("mark post")
+            if len(cmd) == 1:
+                print("Command Error: r, too few arguments")
+            elif "-" in cmd[1]:
+                # Get the max and min of the range, for example get 1 and 3 for input 1-3
+                line = cmd[1].split("-")
+                min = (int)(line[0])
+                max = (int)(line[1])
+                list = ""
+                for i in range (min, max + 1):
+                    list += str(i + numShown) + " "
+                # send it to server
+                clientSocket.send(list)
+            else:
+                arg = (int)(cmd[1]) + numShown
+                clientSocket.send(str(arg))
         elif cmd[0] == "n":
+            numShown += N
             # Ask the server to give the newest N post, and then print if it is not empty
             clientSocket.send("n")
-            postList = clientSocket.recv(1024)
-            if postList == "":
-                print("No more post")
-                #end server side
-                clientSocket.send("q")
-                # end itself
-                break
-            else:
-                print(postList)
+            for i in range(0, N):
+                message = str(i) + ". "
+                # First check if there are any post remained. If so, check if the post is read or not
+                isRead = clientSocket.recv(1024)
+                if isRead == "EOF":
+                    print("No more post")
+                    break
+                elif isRead == "True":
+                    message += "  "
+                else:
+                    message += "N "
+                # Then get the date
+                date = clientSocket.recv(1024)
+                message += date
+                # Finally the title
+                title = clientSocket.recv(1024)
+                message(title)
+
+                print(message)
         elif cmd[0] == "p":
             print("post")
             break
