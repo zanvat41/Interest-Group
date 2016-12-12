@@ -324,7 +324,7 @@ def readPost(serversocket, group, postnumber):
         while 1:  # read FILE line by line
             postID = file.readline()                    # read post line
             tempbuf = postID.split(':')                 # get the ID of the post from file
-            ID = inttempbuf[1]                             # check if post matches the ID that the user wants
+            ID = tempbuf[1]                             # check if post matches the ID that the user wants
             if (int)(ID) == (int)(postnumber):
                 serversocket.send(postID.encode())
                 authorName = file.readline()
