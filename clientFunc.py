@@ -318,18 +318,25 @@ def rg(gname, N, clientSocket):
             clientSocket.send("q".encode())
             break
         else:
+            # This is the read post command
+            clientSocket.send(cmd[0].encode())
             while(1):
-                # take sub-commands for read
-                print("read")
-
-
-
-
- 
-
-
-
-
+                sub = input("read post command >> ").split()
+                if sub[0] == "n":
+                    clientSocket.send("n".encode())
+                    for i in range(0, N):
+                        readLine = clientSocket.recv(1024).decode()
+                        # If all contents have been shown, break for loop
+                        if readLine == "---ENDOFPOST---":
+                            break
+                        # Print content otherwise
+                        else:
+                            print(readLine)
+                elif sub[0] == "q":
+                    clientSocket.send("q".encode())
+                    break
+                else:
+                    print("Incorrect command. Type in q to quit reading.")
 
     return
 
