@@ -95,16 +95,16 @@ sg
 Send client the number of new post for each of their subscribed
 groups
 '''
-def sg(ID, clientsocket,serversocket):
+def sg(ID, clientsocket, serversocket):
     usrfile = openUsrFile(ID)  # open user file that will hold a list of postID's that the user has read
                                # if a post ID is found that's not in the users postID then that post is unread and therefore new
                                # to the user
     while(1):                                         # take sub commands
-        sub = serversocket.recv(1024).decode()
+        sub = clientsocket.recv(1024).decode()
         if sub == "n":
             postRead = 0
             try:
-                group = serversocket.recv(1024).decode()  # get groupName from client that it wants the num of new post for
+                group = clientsocket.recv(1024).decode()  # get groupName from client that it wants the num of new post for
                 postCnt = countPost(group)
                 idList = getPostIDList(group)             # get the list of ID in a group
 
@@ -122,6 +122,9 @@ def sg(ID, clientsocket,serversocket):
             except:
                 print(TimeOUTMESS)  # Timed out of the all sub groups have been served
                 break
+
+        elif sub == "q":
+            break
 
     return 0
 
