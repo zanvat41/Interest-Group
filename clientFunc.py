@@ -2,6 +2,8 @@ import os
 import math
 from pathlib import Path
 import select
+import queue
+import threading
 
 # Declare CONSTANT vars
 DEFAULT_N = 5
@@ -10,7 +12,7 @@ EXTENDSION = '.txt'
 
 # Some global vars
 userFile = ""
-
+messageQueue = queue.Queue()
 
 '''
 Group Map
@@ -296,6 +298,9 @@ of all posts in the group gname, N posts at a time. If N is not specified, a def
 is used. gname must be a subscribed group.
 '''
 def rg(gname, N, clientSocket):
+
+    spawnMessageListener(clientSocket)
+
     # Check if given group name exists
     if str(gname) not in keys:
         print(str(gname) + " does not exist.")
@@ -310,25 +315,25 @@ def rg(gname, N, clientSocket):
     # Ask the server to give the newest N post, and then print if it is not empty
     clientSocket.send("n ".encode())
     for i in range(0, N):
-        message = str(i) + ". "
+        message = str(i+1) + ". "
         # First check if there are any post remained. If so, check if the post is read or not
-        isRead = recvData(clientSocket)
-        if isRead == "EOF":
+        isNew = getMessage(clientSocket)
+        if isNew == "EOF":
             print("No more post")
             # end server side
             break
-        elif isRead == "True":
-            message += "  "
-        else:
+        elif isNew == "True":
             message += "N "
+        else:
+            message += "  "
         # Then get the date
-        date = recvData(clientSocket)
+        date = getMessage(clientSocket)
         message += date
         # Finally the title
-        title = recvData(clientSocket)
-        message(title)
+        title = getMessage(clientSocket)
+        message += (" " + title)
 
-        print(message)
+        print(message,end="")
 
     numShown = 0  # The number of posts shown
 
@@ -368,23 +373,23 @@ def rg(gname, N, clientSocket):
                 else:
                     message += "N "
                 # Then get the date
-                date = recvData(clientSocket)
+                date = getMessage(clientSocket)
                 message += date
                 # Finally the title
-                title = recvData(clientSocket)
-                message(title)
+                title = getMessage(clientSocket)
+                message += (" " + title)
 
-                print(message)
+                print(message,end="")
         elif cmd[0] == "p":
             clientSocket.send("p ".encode())
             print("Please Type In Title:")
             postTitle = input()
-            clientSocket.send((postTitle  + " ").encode())
+            clientSocket.send((postTitle + " ").encode())
             print("Please Type In Content:")
             while(1):
                 postLine = input()
-                clientSocket.send((postLine  + " ").encode())
-                writeStatus = recvData(clientSocket)
+                clientSocket.send((postLine + " ").encode())
+                writeStatus = getMessage(clientSocket)
                 if writeStatus == "end":
                     break
         elif cmd[0] == "q":
@@ -392,13 +397,13 @@ def rg(gname, N, clientSocket):
             break
         else:
             # This is the read post command
-            clientSocket.send((cmd[0]  + " ").encode())
+            clientSocket.send((cmd[0] + " ").encode())
             while(1):
                 sub = input("read post command >> ").split()
                 if sub[0] == "n":
                     clientSocket.send("n ".encode())
                     for i in range(0, N):
-                        readLine = recvData(clientSocket)
+                        readLine = getMessage(clientSocket)
                         # If all contents have been shown, break for loop
                         if readLine == "---ENDOFPOST---":
                             break
@@ -455,10 +460,6 @@ def createHisto(ID):
 
         file.write(key)                                    # writes group name
         file.write(",")                                    # writes sep
-        #if key == 'Author':                                # gets the users name for post writing for first time users
-         #   name = input('Please enter your name\n')
-         #   file.write(name)
-        #else:
         file.write(str(groups.get(key)))                  # writes sub bool for group
         file.write("\n")                                # writes new line
 
@@ -488,8 +489,36 @@ def fillHisto(ID):
             groups[data[0]] = data[1]                   # sets the value
     file.close()
 
+def getMessage(clientSocket):
+    while(1):
+        message = messageQueue.get()
+        if message is not None:
+            break
+    return message
+
+'''
+recvData
+
+A wrapper function to listen for incoming
+messages and stores them into a queue.
+'''
 def recvData(socket):
-    ready = select.select([socket], [], [], 500)
-    if ready[0]:
-        data = socket.recv(1024).decode()
-    return data
+    while(1):
+        ready = select.select([socket], [], [], 500)
+        if ready[0]:
+            data = socket.recv(1024).decode()
+            data = data.split('+')
+            for msg in data:
+                if msg != '':
+                    messageQueue.put(msg)
+    #NEEDS TO END SOMEHOW
+    return
+
+def spawnMessageListener(socket):
+    listener = threading.Thread(target= recvData,
+                                name = ('rgListener'),
+                                args = (socket,))
+    listener.daemon = True
+    listener.start()
+
+    return listener

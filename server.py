@@ -52,7 +52,7 @@ def handleClient(ID, clientsocket, serversocket):
             if request == "sg":
                 serverFunc.sg(ID, clientsocket)
             elif request == "rg":
-                group = clientsocket.recv(1024).decode()                # listens for incoming group name that the client wants to read
+                group = serverFunc.getMessage()                          # listens for incoming group name that the client wants to read
                 serverFunc.rg(ID, clientsocket, serversocket, group)
             elif request == "lo":
                 recvThread.join()

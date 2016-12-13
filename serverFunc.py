@@ -146,7 +146,7 @@ def rg(ID, clientsocket, serversocket, group):
         print(TimeOUTMESS)
         return -1
 
-    showPost(ID,numToShow,serversocket,groupFile,userFile)                      # handle showing post to client
+    showPost(ID,numToShow,clientsocket,groupFile,userFile)  # handle showing post to client
 
     while(1):
         try:
@@ -164,7 +164,7 @@ def rg(ID, clientsocket, serversocket, group):
             range = range.split(" ")                      # split range into an array
             markPost(range, ID)
         elif req[0] == 'n':
-            showPost(ID, numToShow, serversocket, groupFile, userFile)
+            showPost(ID, numToShow, clientsocket, groupFile, userFile)
         elif req[0] == 'p':
             postRequest(ID, clientsocket, serversocket, group)
         elif req[0] == 'q':
@@ -186,16 +186,17 @@ This function is for the cmd rg, it sends the data for if a post is new,
 the date of the post and the subject of the post. This is done for N
 post
 '''
-def showPost(ID, numToShow, serversocket, groupFile, userFile):
+def showPost(ID, numToShow, clientSocket, groupFile, userFile):
     groupPostList.clear()                                                           # resets the groupPostList
     with fileLock:
-        x = 0;
+        x = 0
+
         while x < numToShow:
-            isNew = "True"
+            isNew = "True+"
             line = groupFile.readline()
-            if line == ' ':                                                         # EOF has been reached
-                # informe client
-                serversocket.send("EOF")
+            if line == '':                                                         # EOF has been reached
+                # inform client
+                clientSocket.send("EOF+".encode())
                 break
             line = line.split(":")
             if line[0] == 'PostID':
@@ -206,12 +207,12 @@ def showPost(ID, numToShow, serversocket, groupFile, userFile):
                     if ln == "":  # end of file has been reached
                         break
                     if ln == postID:
-                        isNew = "False"
-                serversocket.send(isNew)                                            # sends isNew a bool for if a post is new or not
+                        isNew = "False+"
+                clientSocket.send(isNew.encode())                                            # sends isNew a bool for if a post is new or not
             if line[0] == 'Date':
-                serversocket.send(line[1])                                          # sends date line
+                clientSocket.send((line[1] + "+").encode())                                 # sends date line
             if line[0] == 'Subject':
-                serversocket.send(line[1])                                          # sends subject line
+                clientSocket.send((line[1] + "+").encode())                                 # sends subject line
                 x += 1
     return
 '''
@@ -311,11 +312,11 @@ def postRequest(ID, clientsocket, serversocket, group):
 
             if(endpost == 3):
                 file.write("---ENDOFPOST---")
-                serversocket.send("end")                # inform the client writing ended
+                clientsocket.send("end")                # inform the client writing ended
                 break                                   # '\n.\n' was found, exit
 
             file.write(line)
-            serversocket.send("writing")                # inform the client the server is writing
+            clientsocket.send("writing")                # inform the client the server is writing
         file.close()
     return 0
 
@@ -336,13 +337,13 @@ def readPost(clientsocket, serversocket, group, postnumber, N):
             ID = tempbuf[1]                             # check if post matches the ID that the user wants
             if (int)(ID) == (int)(postnumber):
                 postFound = True
-                serversocket.send(postID.encode())
+                clientsocket.send(postID.encode())
                 authorName = file.readline()
-                serversocket.send(authorName.encode())
+                clientsocket.send(authorName.encode())
                 postDate = file.readline()
-                serversocket.send(postDate.encode())
+                clientsocket.send(postDate.encode())
                 subject = file.readline()
-                serversocket.send(subject.encode())
+                clientsocket.send(subject.encode())
 
                 while 1:  # waitting for sub commands
                     sub = getMessage()
@@ -350,13 +351,13 @@ def readPost(clientsocket, serversocket, group, postnumber, N):
                         for i in range(0, int(N)):
                             line = file.readline()
                             if line == "":  # end of file has been reached
-                                serversocket.send("---ENDOFPOST---".encode())
+                                clientsocket.send("---ENDOFPOST---".encode())
                                 break
                             elif line == "---ENDOFPOST---":  # end of post reached
-                                serversocket.send("---ENDOFPOST---".encode())
+                                clientsocket.send("---ENDOFPOST---".encode())
                                 break
                             else:
-                                serversocket.send(line.encode())
+                                clientsocket.send(line.encode())
                     elif sub == "q":
                         break
 
