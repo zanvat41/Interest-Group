@@ -342,6 +342,7 @@ def rg(gname, N, clientSocket):
         cmd = input("rg >> ").split()  # arg[0] will always be the cmd
         # and all following items are ARGS
         if cmd[0] == "r":
+            clientSocket.send("r ".encode())
             if len(cmd) == 1:
                 print("Command Error: r, too few arguments")
             elif "-" in cmd[1]:
@@ -353,10 +354,10 @@ def rg(gname, N, clientSocket):
                 for i in range (min, max + 1):
                     list += str(i + numShown) + " "
                 # send it to server
-                clientSocket.send((list  + " ").encode())
+                clientSocket.send((list + " ").encode())
             else:
                 arg = (int)(cmd[1]) + numShown
-                clientSocket.send((str(arg)  + " ").encode())
+                clientSocket.send((str(arg) + " ").encode())
         elif cmd[0] == "n":
             numShown += N
             # Ask the server to give the newest N post, and then print if it is not empty

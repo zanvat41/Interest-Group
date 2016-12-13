@@ -1,4 +1,4 @@
-PostID:0000003
+PostID:3
 Author:Mitchkassler
 Date:Nov 12 19:34:03 EST 2016
 Subject:Bacon ipsum dolor amet
@@ -10,7 +10,7 @@ hock bacon ribeye, bresaola venison shank tri-tip cupim landjaeger tongue kevin 
 Hamburger tenderloin ribeye, pastrami salami picanha chicken alcatra doner pork loin boudin jerky
 swine pancetta.
 ---ENDOFPOST---
-PostID:0000004
+PostID:4
 Author:HollyHamHock
 Date:Nov 12 19:34:03 EST 2016
 Subject:Jerky prosciutto boudin shankle
@@ -20,7 +20,7 @@ Shankle turkey tail prosciutto shoulder beef ribs landjaeger salami pancetta ham
 kielbasa. Doner flank beef ribs corned beef leberkas sirloin drumstick shankle ground round
 tenderloin hamburger tongue pork belly capicola. Pig hamburger capicola doner tenderloin.
 ---ENDOFPOST---
-PostID:0000005
+PostID:5
 Author:DaveProsciutto
 Date:Nov 12 19:34:03 EST 2016
 Subject:Pastrami salami beef ribs cow frankfurter

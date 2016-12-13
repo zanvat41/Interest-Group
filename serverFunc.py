@@ -3,6 +3,7 @@ import datetime
 import threading
 import select
 import queue
+from pathlib import Path
 
 GROUP_PATH = "serverData/"
 USER_PATH = "serverData/users"
@@ -13,6 +14,7 @@ TimeOUTMESS = "A TIME OUT HAS OCCURRED"
 
 currentPostID = 0
 fileLock = threading.Lock()
+buffLock = threading.Lock()
 groupPostList = []                  # list to hold group post ID by index
 messageBuffer = queue.Queue()       # queue to hold incoming messages
 
@@ -137,7 +139,13 @@ parameter ID, socket, group
 client request to read groups.
 '''
 def rg(ID, clientsocket, serversocket, group):
-    groupFile = openGroupFile(group)
+
+    file = Path(GROUP_PATH + group + EXTENDSION)
+    if file.is_file():
+        groupFile = openGroupFile(group)
+    else:
+        return
+
     userFile = openUsrFile(ID)
 
     try:
@@ -146,14 +154,12 @@ def rg(ID, clientsocket, serversocket, group):
         print(TimeOUTMESS)
         return -1
 
-    showPost(ID,numToShow,clientsocket,groupFile,userFile)  # handle showing post to client
+    showPost(ID,numToShow,clientsocket,groupFile)  # handle showing post to client
 
     while(1):
-        try:
-            request = getMessage()                           # listens for incoming cmds like n, q, [ID], p
-        except:
-            print(TimeOUTMESS)
-            return -1
+
+        request = getMessage()                           # listens for incoming cmds like n, q, [ID], p
+
         req = request.split(" ")                                                # req is the list of cmd, 0 being the cmd itself and the following is the args
         if req[0] == 'r':
             try:
@@ -161,10 +167,10 @@ def rg(ID, clientsocket, serversocket, group):
             except:
                 print(TimeOUTMESS)
                 return
-            range = range.split(" ")                      # split range into an array
+            range = range.split("-")                      # split range into an array
             markPost(range, ID)
         elif req[0] == 'n':
-            showPost(ID, numToShow, clientsocket, groupFile, userFile)
+            showPost(ID, numToShow, clientsocket, groupFile)
         elif req[0] == 'p':
             postRequest(ID, clientsocket, serversocket, group)
         elif req[0] == 'q':
@@ -186,8 +192,7 @@ This function is for the cmd rg, it sends the data for if a post is new,
 the date of the post and the subject of the post. This is done for N
 post
 '''
-def showPost(ID, numToShow, clientSocket, groupFile, userFile):
-    groupPostList.clear()                                                           # resets the groupPostList
+def showPost(ID, numToShow, clientSocket, groupFile):                                                          # resets the groupPostList
     with fileLock:
         x = 0
 
@@ -200,6 +205,7 @@ def showPost(ID, numToShow, clientSocket, groupFile, userFile):
                 break
             line = line.split(":")
             if line[0] == 'PostID':
+                userFile = openUsrFile(ID)
                 postID = line[1]
                 groupPostList.append(postID)
                 while (1):
@@ -208,6 +214,8 @@ def showPost(ID, numToShow, clientSocket, groupFile, userFile):
                         break
                     if ln == postID:
                         isNew = "False+"
+                        break
+                userFile.close()
                 clientSocket.send(isNew.encode())                                            # sends isNew a bool for if a post is new or not
             if line[0] == 'Date':
                 clientSocket.send((line[1] + "+").encode())                                 # sends date line
@@ -259,12 +267,16 @@ def countPost(group):
 markPost
 Given a list of post to mark as read
 '''
-def markPost(markAsRead, ID):
-    usrFile = openUsrFile(ID)
-    while(len(markAsRead) != 0):
-        postIndex = markAsRead.pop()
-        postID = groupPostList[postIndex]
-        usrFile.write(postID,'a')
+def markPost(markRange, ID):
+    usrFile = open((USER_PATH + ID + EXTENDSION), 'a')
+    if len(markRange) == 1:
+        postID = groupPostList[int(markRange[0])-1]
+        usrFile.write(postID)
+    else:
+        for i in range(markRange[0], markRange[1]):
+            postID = groupPostList[i]
+            usrFile.write(postID)
+
     usrFile.close()
     return
 
@@ -386,6 +398,7 @@ THIS IS CALLED BY A THREAD, DO NOT CALL THIS IN
 THE SERVERFUNC
 '''
 def listenForMessages(client):
+
     while(1):
         ready = select.select([client], [], [], 15)  # waits for data to be in the buffer
         if ready[0]:  # item is found
@@ -393,7 +406,8 @@ def listenForMessages(client):
             request = request.split(' ')
             for x in request:
                 if x != '':
-                    messageBuffer.put(x)  # add it to the queue
+                    with buffLock:
+                        messageBuffer.put(x)  # add it to the queue
                 if x == 'lo':
                     break
     return
