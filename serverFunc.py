@@ -102,29 +102,24 @@ def sg(ID, clientsocket,messageBuffer):
                                # if a post ID is found that's not in the users postID then that post is unread and therefore new
                                # to the user
     while(1):                                         # take sub commands
-        sub = getMessage()
+        sub = getMessage(messageBuffer)
         if sub == "n":
             postRead = 0
-            try:
-                group = getMessage(messageBuffer)                  # get groupName from client that it wants the num of new post for
+            group = getMessage(messageBuffer)                  # get groupName from client that it wants the num of new post for
 
-                postCnt = countPost(group)
-                idList = getPostIDList(group)             # get the list of ID in a group
+            postCnt = countPost(group)
+            idList = getPostIDList(group)             # get the list of ID in a group
 
-                while(len(idList) != 0):
-                    idToCheck = idList.pop()              # remove a ID from the list and check to see if it was read by the user
-                    while(1):
-                        line = usrfile.readline()
-                        if line == "":  # end of file has been reached
-                            break
-                        if line == idToCheck:
-                            postRead += 1
-                newPost = postCnt - postRead
-                clientsocket.send((str(newPost)+ "+").encode())  # send back the number of new post to the client for that group
-
-            except:
-                print(TimeOUTMESS)  # Timed out of the all sub groups have been served
-                break
+            while(len(idList) != 0):
+                idToCheck = idList.pop()              # remove a ID from the list and check to see if it was read by the user
+                while(1):
+                    line = usrfile.readline()
+                    if line == "":  # end of file has been reached
+                        break
+                    if line == idToCheck:
+                        postRead += 1
+            newPost = postCnt - postRead
+            clientsocket.send((str(newPost)+ "+").encode())  # send back the number of new post to the client for that group
 
         elif sub == "q":
             break

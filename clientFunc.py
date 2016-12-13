@@ -489,6 +489,7 @@ def fillHisto(ID):
     file.close()
 
 def getMessage(clientSocket):
+    message = ""
     while(1):
         message = messageQueue.get()
         if message is not None:
