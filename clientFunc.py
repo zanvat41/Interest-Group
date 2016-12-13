@@ -352,7 +352,7 @@ def rg(gname, N, clientSocket):
                 max = (int)(line[1])
                 list = ""
                 for i in range (min, max + 1):
-                    list += str(i + numShown) + " "
+                    list += str(i + numShown) + "-"
                 # send it to server
                 clientSocket.send((list + " ").encode())
             else:

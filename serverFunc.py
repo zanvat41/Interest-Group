@@ -276,7 +276,7 @@ def markPost(markRange, ID):
         postID = groupPostList[int(markRange[0])-1]
         usrFile.write(postID)
     else:
-        for i in range(markRange[0], markRange[1]):
+        for i in range(0, len(markRange)-1):
             postID = groupPostList[i]
             usrFile.write(postID)
 
