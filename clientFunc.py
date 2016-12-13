@@ -488,6 +488,12 @@ def fillHisto(ID):
             groups[data[0]] = data[1]                   # sets the value
     file.close()
 
+'''
+getMessage
+
+get a recv message that has been stored
+in messageQueue
+'''
 def getMessage(clientSocket):
     message = ""
     while(1):
@@ -504,13 +510,16 @@ messages and stores them into a queue.
 '''
 def recvData(socket):
     while(1):
-        ready = select.select([socket], [], [], 500)
+        ready = select.select([socket], [], [], 500)                # waits for there to be an incomming message before recv it
         if ready[0]:
-            data = socket.recv(1024).decode()
-            data = data.split('+')
-            for msg in data:
-                if msg != '':
-                    messageQueue.put(msg)
+            try:
+                data = socket.recv(1024).decode()
+                data = data.split('+')
+                for msg in data:
+                    if msg != '':
+                        messageQueue.put(msg)
+            except:
+                pass
     #NEEDS TO END SOMEHOW
     return
 

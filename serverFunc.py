@@ -402,7 +402,7 @@ THE SERVERFUNC
 def listenForMessages(client,messageBuffer):
 
     while(1):
-        ready = select.select([client], [], [], 15)  # waits for data to be in the buffer
+        ready = select.select([client], [], [], 500)  # waits for data to be in the buffer
         if ready[0]:  # item is found
             request = client.recv(1024).decode()  # recv item
             request = request.split(' ')
