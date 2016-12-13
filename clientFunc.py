@@ -242,7 +242,7 @@ def sg(N, clientSocket):
         newPost = " "
         # send the group name
         clientSocket.send(((subKeys[total - remain - n + i - 1]) + " ").encode())
-        newNum = int(recvData(clientSocket))
+        newNum = int(getMessage(clientSocket))
         if newNum != 0:
             newPost = str(newNum)
         print(str(i) + ". " + newPost + " " + subKeys[total - remain - n + i - 1])
@@ -278,7 +278,7 @@ def sg(N, clientSocket):
                 newPost = " "
                 # send the group name
                 clientSocket.send(((subKeys[total - remain - n + i - 1]) + " ").encode())
-                newNum = int(recvData(clientSocket))
+                newNum = int(getMessage(clientSocket))
                 if newNum != 0:
                     newPost = str(newNum)
                 print(str(i) + ". " + newPost + " " + subKeys[total - remain - n + i - 1])
@@ -298,8 +298,6 @@ of all posts in the group gname, N posts at a time. If N is not specified, a def
 is used. gname must be a subscribed group.
 '''
 def rg(gname, N, clientSocket):
-
-    spawnMessageListener(clientSocket)
 
     # Check if given group name exists
     if str(gname) not in keys:

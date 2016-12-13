@@ -120,7 +120,7 @@ def sg(ID, clientsocket,messageBuffer):
                         if line == idToCheck:
                             postRead += 1
                 newPost = postCnt - postRead
-                clientsocket.send(str(newPost).encode())  # send back the number of new post to the client for that group
+                clientsocket.send((str(newPost)+ "+").encode())  # send back the number of new post to the client for that group
 
             except:
                 print(TimeOUTMESS)  # Timed out of the all sub groups have been served
