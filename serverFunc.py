@@ -6,7 +6,7 @@ import queue
 from pathlib import Path
 
 GROUP_PATH = "serverData/"
-USER_PATH = "serverData/users"
+USER_PATH = "serverData/users/"
 EXTENDSION = ".txt"
 
 # ERROR MESSAGES
@@ -16,7 +16,6 @@ currentPostID = 0
 fileLock = threading.Lock()
 buffLock = threading.Lock()
 groupPostList = []                  # list to hold group post ID by index
-messageBuffer = queue.Queue()       # queue to hold incoming messages
 
 '''
 Group Map
@@ -98,7 +97,7 @@ sg
 Send client the number of new post for each of their subscribed
 groups
 '''
-def sg(ID, clientsocket):
+def sg(ID, clientsocket,messageBuffer):
     usrfile = openUsrFile(ID)  # open user file that will hold a list of postID's that the user has read
                                # if a post ID is found that's not in the users postID then that post is unread and therefore new
                                # to the user
@@ -107,7 +106,7 @@ def sg(ID, clientsocket):
         if sub == "n":
             postRead = 0
             try:
-                group = getMessage()                  # get groupName from client that it wants the num of new post for
+                group = getMessage(messageBuffer)                  # get groupName from client that it wants the num of new post for
 
                 postCnt = countPost(group)
                 idList = getPostIDList(group)             # get the list of ID in a group
@@ -138,7 +137,7 @@ parameter ID, socket, group
 
 client request to read groups.
 '''
-def rg(ID, clientsocket, serversocket, group):
+def rg(ID, clientsocket, serversocket, group, messageBuffer):
 
     file = Path(GROUP_PATH + group + EXTENDSION)
     if file.is_file():
@@ -146,10 +145,14 @@ def rg(ID, clientsocket, serversocket, group):
     else:
         return
 
-    userFile = openUsrFile(ID)
+    file = Path(USER_PATH + ID + EXTENDSION)
+    if file.is_file():
+        userFile = openUsrFile(ID)
+    else:
+        userFile = open((USER_PATH + ID + EXTENDSION), "w+")
 
     try:
-        numToShow = int(getMessage())                       # listens for incoming N
+        numToShow = int(getMessage(messageBuffer))                       # listens for incoming N
     except:
         print(TimeOUTMESS)
         return -1
@@ -158,12 +161,12 @@ def rg(ID, clientsocket, serversocket, group):
 
     while(1):
 
-        request = getMessage()                           # listens for incoming cmds like n, q, [ID], p
+        request = getMessage(messageBuffer)                           # listens for incoming cmds like n, q, [ID], p
 
         req = request.split(" ")                                                # req is the list of cmd, 0 being the cmd itself and the following is the args
         if req[0] == 'r':
             try:
-                range = getMessage()   # server listens for a range ex: 1 2 3 4 or just 1
+                range = getMessage(messageBuffer)   # server listens for a range ex: 1 2 3 4 or just 1
             except:
                 print(TimeOUTMESS)
                 return
@@ -172,7 +175,7 @@ def rg(ID, clientsocket, serversocket, group):
         elif req[0] == 'n':
             showPost(ID, numToShow, clientsocket, groupFile)
         elif req[0] == 'p':
-            postRequest(ID, clientsocket, serversocket, group)
+            postRequest(ID, clientsocket, serversocket, group,messageBuffer)
         elif req[0] == 'q':
             groupFile.close()
             userFile.close()
@@ -286,14 +289,14 @@ Will handle the request from the client to post
 Will listen for in coming messages from client and
 write it the a file for that group
 '''
-def postRequest(ID, clientsocket, serversocket, group):
+def postRequest(ID, clientsocket, serversocket, group, messageBuffer):
 
     # Lock file for writing
     with fileLock:
         file = openGroupFile(group)
         file.write("Group: " + group)
         try:
-            subject = getMessage()
+            subject = getMessage(messageBuffer)
         except:
             print(TimeOUTMESS)
             return -1
@@ -308,7 +311,7 @@ def postRequest(ID, clientsocket, serversocket, group):
         #user body post
         while(1):
             try:
-                line = getMessage()
+                line = getMessage(messageBuffer)
             except:
                 print(TimeOUTMESS)
                 return -1
@@ -387,7 +390,11 @@ def logout(ID):
     print("Client has logged out : " + ID)
     return 0
 
-def getMessage():
+def initMessageBuffer():
+    messageBuffer = queue.Queue()  # queue to hold incoming messages
+    return  messageBuffer
+
+def getMessage(messageBuffer):
     while(1):
         message = messageBuffer.get()
         if message is not None:
@@ -397,7 +404,7 @@ def getMessage():
 THIS IS CALLED BY A THREAD, DO NOT CALL THIS IN
 THE SERVERFUNC
 '''
-def listenForMessages(client):
+def listenForMessages(client,messageBuffer):
 
     while(1):
         ready = select.select([client], [], [], 15)  # waits for data to be in the buffer
