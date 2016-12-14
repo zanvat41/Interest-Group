@@ -386,11 +386,11 @@ def rg(gname, N, clientSocket):
             postTitle = input()
             clientSocket.send((postTitle + " ").encode())
             print("Please Type In Content:")
-            while(1):
+            # user body post
+            while (1):
                 postLine = input()
-                clientSocket.send((postLine + " ").encode())
-                writeStatus = getMessage(clientSocket)
-                if writeStatus == "end":
+                clientSocket.send((postLine).encode())
+                if postLine == ".":
                     break
         elif cmd[0] == "q":
             clientSocket.send("q ".encode())
