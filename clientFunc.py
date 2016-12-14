@@ -408,7 +408,7 @@ def rg(gname, N, clientSocket):
                         notEOF = False
                         break
                 # If all contents have been shown, break for loop
-                elif readLine == "---ENDOFPOST---":
+                elif readLine == "---ENDOFPOST---" or readLine == "---ENDOFPOST---\n":
                     notEOF = False
                     break
                 # Print content otherwise

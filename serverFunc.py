@@ -152,8 +152,6 @@ def rg(ID, clientsocket, serversocket, group, messageBuffer):
         print(TimeOUTMESS)
         return -1
 
-    showPost(ID,numToShow,clientsocket,groupFile)  # handle showing post to client
-
     while(1):
 
         request = getMessage(messageBuffer)                           # listens for incoming cmds like n, q, [ID], p
@@ -172,6 +170,7 @@ def rg(ID, clientsocket, serversocket, group, messageBuffer):
         elif req[0] == 'p':
             postRequest(ID, clientsocket, serversocket, group,messageBuffer)
         elif req[0] == 'q':
+            groupPostList.clear()
             groupFile.close()
             userFile.close()
             break
