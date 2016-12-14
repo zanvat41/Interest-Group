@@ -32,10 +32,6 @@ def main():
         except:
             print("ERROR : unable to create thread for user ")
 
-        for x in clientList:
-            x.join()                                          # loop thur list clientList
-            print("thread joined")                          # and join them
-
 def handleClient(ID, clientsocket, serversocket):
     currID = serverFunc.getCurrentPostID()
     print(currID)
