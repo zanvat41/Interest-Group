@@ -73,6 +73,10 @@ Open group file for editing
 def openGroupFile(group):
     file = open((GROUP_PATH + group + EXTENDSION), "r+")
     return file
+    
+def openGroupFileA(group):
+    file = open((GROUP_PATH + group + EXTENDSION), "a")
+    return file    
 
 '''
 getCurrentPostID
@@ -95,9 +99,9 @@ stores the current postID to the group file in serverData
 This should be called when ever a new post is added. So that
 if another client connects they can an updated number.
 '''
-def getWritePostID():
+def getWritePostID(n):
     file = open((GROUP_PATH + 'groups' + EXTENDSION), 'w')
-    file.write(currentPostID)
+    file.write(str(n))
     file.close()
     return 0
 
@@ -293,48 +297,43 @@ Will listen for in coming messages from client and
 write it the a file for that group
 '''
 def postRequest(ID, clientsocket, serversocket, group, messageBuffer):
-
     # Lock file for writing
     with fileLock:
-        file = openGroupFile(group)
-        file.write("Group: " + group)
+        file = openGroupFileA(group)
         try:
-            subject = getMessage(messageBuffer)
+            subject = clientsocket.recv(1024).decode()
         except:
             print(TimeOUTMESS)
             return -1
 
-        file.write("Subject: " + subject)
-        file.write("Author: " + ID)
+
+        file.write("PostID: " + str(getCurrentPostID()) + "\n");
         date = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
-        file.write("Date: " + date)
+        file.write("Author: " + ID + "\n")
+        file.write("Date: " + date + "\n")
+        file.write("Subject: " + subject + "\n")
+        getWritePostID(getCurrentPostID() + 1)             # update the file named groups
+
 
         # counter to check if the user wants to end post
-        endpost = 0
+        try:
+            line = clientsocket.recv(1024).decode()
+        except:
+            print(TimeOUTMESS)
+            return -1
         #user body post
-        while(1):
+        while(line != "."):
+            if(line == "EOF"):
+                continue
+
+            file.write(line)
+            file.write("\n")
             try:
-                line = getMessage(messageBuffer)
+                line = clientsocket.recv(1024).decode()
             except:
                 print(TimeOUTMESS)
                 return -1
-            # find if user is trying to end post
-            if (endpost == 1):
-                if (line == "."):
-                    endpost += 1
-                else:
-                    endpost = 0  # reset endpost
-
-            if(line == "\n"):
-                endpost += 1
-
-            if(endpost == 3):
-                file.write("---ENDOFPOST---")
-                clientsocket.send("end")                # inform the client writing ended
-                break                                   # '\n.\n' was found, exit
-
-            file.write(line)
-            clientsocket.send("writing")                # inform the client the server is writing
+        file.write("---ENDOFPOST---\n")
         file.close()
     return 0
 
