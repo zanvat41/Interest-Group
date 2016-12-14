@@ -177,7 +177,7 @@ def rg(ID, clientsocket, serversocket, group, messageBuffer):
             break
         elif isinstance(int(req[0]), int):                           # checks if it is an int:
             postIndex = req[0]
-            readPost(clientsocket, serversocket, group, postIndex, messageBuffer)
+            readPost(clientsocket, ID, group, postIndex, messageBuffer)
         else:
             print('request was not valid')
 
@@ -337,7 +337,7 @@ User requested to read a post. Get the post and find it by ID
 by search thru the file for the group and regex the file for
 the the ids and compare
 '''
-def readPost(clientsocket, serversocket, group, postnumber, messageBuffer):
+def readPost(clientsocket, ID, group, postnumber, messageBuffer):
     with fileLock:
         file = openGroupFile(group)
         postFound = False
@@ -353,7 +353,7 @@ def readPost(clientsocket, serversocket, group, postnumber, messageBuffer):
             if int(postCount) == int(postnumber):
                 postFound = True
                 #mark post!!!
-
+                markPost(postnumber, ID)
 
                 authorName = file.readline()
                 postDate = file.readline()
