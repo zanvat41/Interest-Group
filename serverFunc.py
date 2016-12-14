@@ -177,7 +177,7 @@ def rg(ID, clientsocket, serversocket, group, messageBuffer):
             break
         elif isinstance(int(req[0]), int):                           # checks if it is an int:
             postIndex = req[0]
-            readPost(clientsocket, serversocket, group, postIndex, numToShow)
+            readPost(clientsocket, serversocket, group, postIndex, messageBuffer)
         else:
             print('request was not valid')
 
@@ -337,33 +337,45 @@ User requested to read a post. Get the post and find it by ID
 by search thru the file for the group and regex the file for
 the the ids and compare
 '''
-def readPost(clientsocket, serversocket, group, postnumber, N):
+def readPost(clientsocket, serversocket, group, postnumber, messageBuffer):
     with fileLock:
-        file = open(group, 'w')
+        file = openGroupFile(group)
         postFound = False
-        while postFound:  # read FILE line by line
+        postCount = 0;
+        while not postFound:  # read FILE line by line
             postID = file.readline()                    # read post line
             tempbuf = postID.split(':')                 # get the ID of the post from file
-            ID = tempbuf[1]                             # check if post matches the ID that the user wants
-            if (int)(ID) == (int)(postnumber):
+            ID = tempbuf[0]                             # check if is the first line of a post
+
+            if ID == 'PostID':
+                postCount += 1
+
+            if int(postCount) == int(postnumber):
                 postFound = True
-                clientsocket.send(postID.encode())
+                #mark post!!!
+
+
                 authorName = file.readline()
-                clientsocket.send(authorName.encode())
                 postDate = file.readline()
-                clientsocket.send(postDate.encode())
                 subject = file.readline()
-                clientsocket.send(subject.encode())
+                groupLine = "Group: " + group + "\n"
+
+                firstfour = [groupLine, subject, authorName, postDate]
+
+                linecount = 0
 
                 while 1:  # waitting for sub commands
-                    sub = getMessage()
+                    sub = getMessage(messageBuffer)
                     if sub == "n":
-                        for i in range(0, int(N)):
+                        if linecount < 4:
+                            clientsocket.send(firstfour[linecount].encode())
+                            linecount += 1
+                        else:
                             line = file.readline()
                             if line == "":  # end of file has been reached
                                 clientsocket.send("---ENDOFPOST---".encode())
                                 break
-                            elif line == "---ENDOFPOST---":  # end of post reached
+                            elif line == "---ENDOFPOST---\n":  # end of post reached
                                 clientsocket.send("---ENDOFPOST---".encode())
                                 break
                             else:
