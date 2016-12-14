@@ -269,11 +269,11 @@ def markPost(markRange, ID):
     usrFile = open((USER_PATH + ID + EXTENDSION), 'a')
     if len(markRange) == 1:
         postID = groupPostList[int(markRange[0])-1]
-        usrFile.write(postID)
+        usrFile.write(postID + "\n")
     else:
         for i in range(0, len(markRange)-1):
             postID = groupPostList[i]
-            usrFile.write(postID)
+            usrFile.write(postID + "\n")
 
     usrFile.close()
     return
