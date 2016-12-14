@@ -4,6 +4,7 @@ from pathlib import Path
 import select
 import queue
 import threading
+import sys
 
 # Declare CONSTANT vars
 DEFAULT_N = 5
@@ -396,19 +397,43 @@ def rg(gname, N, clientSocket):
             break
         else:
             # This is the read post command
-            clientSocket.send((cmd[0] + " ").encode())
-            while(1):
+            postNumber = int(cmd[0]) + numShown
+            clientSocket.send((str(postNumber) + " ").encode())
+            notEOF = True
+            for i in range(0, N + 1):
+                clientSocket.send("n ".encode())
+                readLine = getMessage(clientSocket)
+                if (readLine == "EOF"):
+                    if i != 0:
+                        notEOF = False
+                        break
+                # If all contents have been shown, break for loop
+                elif readLine == "---ENDOFPOST---":
+                    notEOF = False
+                    break
+                # Print content otherwise
+                else:
+                    sys.stdout.write(readLine)
+                    sys.stdout.flush()
+            while(notEOF):
                 sub = input("read post command >> ").split()
                 if sub[0] == "n":
-                    clientSocket.send("n ".encode())
-                    for i in range(0, N):
+                    #clientSocket.send("n ".encode())
+                    for i in range(0, N + 1):
+                        clientSocket.send("n ".encode())
                         readLine = getMessage(clientSocket)
+                        if(readLine == "EOF"):
+                            if  i != 0:
+                                notEOF = False
+                                break
                         # If all contents have been shown, break for loop
-                        if readLine == "---ENDOFPOST---":
+                        elif readLine == "---ENDOFPOST---":
+                            notEOF = False
                             break
                         # Print content otherwise
                         else:
-                            print(readLine)
+                            sys.stdout.write(readLine)
+                            sys.stdout.flush()
                 elif sub[0] == "q":
                     clientSocket.send("q ".encode())
                     break
