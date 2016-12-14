@@ -100,7 +100,7 @@ This should be called when ever a new post is added. So that
 if another client connects they can an updated number.
 '''
 def getWritePostID(n):
-    file = open((GROUP_PATH + 'groups' + EXTENDSION), 'w')
+    file = open((GROUP_PATH + 'groups'), 'w')
     file.write(str(n))
     file.close()
     return 0
