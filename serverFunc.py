@@ -55,7 +55,16 @@ return file
 '''
 def openUsrFile(ID):
     print("opening " + (USER_PATH + ID + EXTENDSION))
-    file = open((USER_PATH + ID + EXTENDSION), 'r+')
+
+    file = Path(USER_PATH + ID + EXTENDSION)
+    if file.is_file():
+        # read file and import data
+        file = open((USER_PATH + ID + EXTENDSION), 'r+')
+    else:
+        # else create the file
+        print("User does not exist, creating user...\n")
+        file = open((USER_PATH + ID + EXTENDSION), 'w+')
+
     return file
 
 '''
@@ -87,7 +96,7 @@ This should be called when ever a new post is added. So that
 if another client connects they can an updated number.
 '''
 def getWritePostID():
-    file = open((GROUP_PATH + 'groups'), 'w')
+    file = open((GROUP_PATH + 'groups' + EXTENDSION), 'w')
     file.write(currentPostID)
     file.close()
     return 0
