@@ -364,7 +364,7 @@ def rg(gname, N, clientSocket):
             for i in range(0, N):
                 message = str(i) + ". "
                 # First check if there are any post remained. If so, check if the post is read or not
-                isRead = recvData(clientSocket)
+                isRead = getMessage(clientSocket)
                 if isRead == "EOF":
                     print("No more post")
                     break
