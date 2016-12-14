@@ -1,6 +1,6 @@
 PostID:6
 Author:Mitchkassler
-Date:Nov 12 19:34:03 EST 2016
+Date:Tuesday, 13. December 2016
 Subject:Bacon ipsum dolor amet
 Bacon ipsum dolor amet tri-tip sausage tail beef ribs shoulder filet mignon brisket ball tip.
 Turducken picanha turkey chicken, cow pork salami tail chuck andouille kielbasa alcatra.
@@ -12,7 +12,7 @@ swine pancetta.
 ---ENDOFPOST---
 PostID:7
 Author:HollyHamHock
-Date:Nov 12 19:34:03 EST 2016
+Date:Tuesday, 13. December 2016
 Subject:Jerky prosciutto boudin shankle
 Jerky prosciutto boudin shankle corned beef sausage. Tri-tip leberkas kevin frankfurter.
 Pork belly pork loin pork kevin boudin drumstick ham strip steak bresaola chicken jerky alcatra.
@@ -22,7 +22,7 @@ tenderloin hamburger tongue pork belly capicola. Pig hamburger capicola doner te
 ---ENDOFPOST---
 PostID:8
 Author:DaveProsciutto
-Date:Nov 12 19:34:03 EST 2016
+Date:Tuesday, 13. December 2016
 Subject:Pastrami salami beef ribs cow frankfurter
 Pastrami salami beef ribs cow frankfurter flank kevin jowl cupim tail spare ribs capicola swine.
 Pork meatball ribeye sausage ham tri-tip beef ribs boudin kielbasa flank strip steak beef ball
@@ -31,4 +31,19 @@ turducken. Sausage shank tail leberkas andouille doner ball tip alcatra ground r
 beef pig. Short ribs drumstick doner, chicken meatloaf pork shank beef ribs landjaeger t-bone
 beef burgdoggen ground round. Bresaola andouille rump, corned beef hamburger chuck ham hock
 venison spare ribs strip steak doner pig tri-tip shank.
+---ENDOFPOST---
+
+PostID: 9
+Author: 1234
+Date: Tuesday, 13. December 2016 11:13PM
+Subject: hello 
+this
+is
+a
+new
+post
+Im
+posting
+something
+new
 ---ENDOFPOST---

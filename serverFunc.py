@@ -306,8 +306,7 @@ def postRequest(ID, clientsocket, serversocket, group, messageBuffer):
             print(TimeOUTMESS)
             return -1
 
-
-        file.write("PostID: " + str(getCurrentPostID()) + "\n");
+        file.write("\nPostID: " + str(getCurrentPostID()) + "\n")
         date = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
         file.write("Author: " + ID + "\n")
         file.write("Date: " + date + "\n")
@@ -317,7 +316,7 @@ def postRequest(ID, clientsocket, serversocket, group, messageBuffer):
 
         # counter to check if the user wants to end post
         try:
-            line = clientsocket.recv(1024).decode()
+            line = getMessage(messageBuffer)
         except:
             print(TimeOUTMESS)
             return -1
@@ -329,7 +328,7 @@ def postRequest(ID, clientsocket, serversocket, group, messageBuffer):
             file.write(line)
             file.write("\n")
             try:
-                line = clientsocket.recv(1024).decode()
+                line = getMessage(messageBuffer)
             except:
                 print(TimeOUTMESS)
                 return -1
